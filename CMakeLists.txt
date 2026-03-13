@@ -38,6 +38,7 @@ add_executable(${PROJECT_NAME}
         include/Player.hpp
         include/Bullet.hpp
         include/Background.hpp
+        include/Enemy.hpp
 )
 
 if(MSVC)

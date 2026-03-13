@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include "Bullet.hpp"
 #include "Background.hpp"
+#include "Enemy.hpp"
 #include <memory>
 #include <vector>
 
@@ -33,6 +34,9 @@ private:
     std::vector<std::shared_ptr<Bullet>> m_Bullets;
     std::shared_ptr<Background> m_Bg1;
     std::shared_ptr<Background> m_Bg2;
+
+    std::vector<std::shared_ptr<Enemy>> m_Enemies;
+    float m_EnemySpawnTimer = 0.0f;
 };
 
 #endif
