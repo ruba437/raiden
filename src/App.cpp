@@ -9,9 +9,29 @@ void App::Start() {
     LOG_TRACE("Start");
     m_Player = std::make_shared<Player>();
     m_CurrentState = State::UPDATE;
+
+
+    m_Bg1 = std::make_shared<Background>();
+    float h = m_Bg1->GetScaledHeight(); // 取得動態計算的高度
+
+    m_Bg1->SetPosition({0, 0});
+
+    m_Bg2 = std::make_shared<Background>();
+    m_Bg2->SetPosition({0, h}); // 精準放在第一張上方，不要多 1 像素也不要少
+
+    m_Player = std::make_shared<Player>();
+    m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
+    float bgSpeed = 2.0f;
+
+    // 更新並繪製背景
+    m_Bg1->Update(bgSpeed);
+    m_Bg2->Update(bgSpeed);
+    m_Bg1->Draw();
+    m_Bg2->Draw();
+
     float speed = 5.0f; // 每一幀移動的像素
     glm::vec2 dir = {0.0f, 0.0f};
 

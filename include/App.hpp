@@ -4,6 +4,7 @@
 #include "pch.hpp" // IWYU pragma: export
 #include "Player.hpp"
 #include "Bullet.hpp"
+#include "Background.hpp"
 #include <memory>
 #include <vector>
 
@@ -30,6 +31,8 @@ private:
     State m_CurrentState = State::START;
     std::shared_ptr<Player> m_Player;
     std::vector<std::shared_ptr<Bullet>> m_Bullets;
+    std::shared_ptr<Background> m_Bg1;
+    std::shared_ptr<Background> m_Bg2;
 };
 
 #endif
