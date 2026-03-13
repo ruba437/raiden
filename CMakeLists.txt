@@ -36,6 +36,7 @@ add_executable(${PROJECT_NAME}
     ${SRC_FILES}
     ${HEADER_FILES}
         include/Player.hpp
+        include/Bullet.hpp
 )
 
 if(MSVC)

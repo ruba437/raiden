@@ -5,6 +5,7 @@ set(SRC_FILES
 set(INCLUDE_FILES
     App.hpp
     Player.hpp
+    Bullet.hpp
 )
 
 set(TEST_FILES

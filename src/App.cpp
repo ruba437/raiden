@@ -26,6 +26,27 @@ void App::Update() {
         m_Player->Move(glm::normalize(dir), speed);
     }
 
+    // --- 2. 偵測攻擊輸入 ---
+    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
+        // 建立新子彈並放入 vector 中
+        auto newBullet = std::make_shared<Bullet>(m_Player->GetPosition());
+        m_Bullets.push_back(newBullet); // 現在 m_Bullets 是 vector，所以可以使用 push_back
+    }
+
+    // --- 3. 更新與繪製子彈 ---
+    for (auto it = m_Bullets.begin(); it != m_Bullets.end(); ) {
+        auto& bullet = *it;
+        bullet->Update();
+        bullet->Draw();
+
+        // 效能優化：如果子彈飛出畫面（假設高度 500），就從 vector 移除
+        if (bullet->GetPosition().y > 500.0f) {
+            it = m_Bullets.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
     // 繪製玩家
     m_Player->Draw();
 
