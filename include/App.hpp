@@ -2,6 +2,8 @@
 #define APP_HPP
 
 #include "pch.hpp" // IWYU pragma: export
+#include "Player.hpp"
+#include <memory>      // 為了使用 std::shared_ptr
 
 class App {
 public:
@@ -24,6 +26,7 @@ private:
 
 private:
     State m_CurrentState = State::START;
+    std::shared_ptr<Player> m_Player;
 };
 
 #endif
