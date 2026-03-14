@@ -65,10 +65,32 @@ void App::Update() {
     }
 
     // --- 2. 偵測攻擊輸入 ---
-    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
-        // 建立新子彈並放入 vector 中
-        auto newBullet = std::make_shared<Bullet>(m_Player->GetPosition());
-        m_Bullets.push_back(newBullet); // 現在 m_Bullets 是 vector，所以可以使用 push_back
+    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) { // 建議配合冷卻時間使用
+
+        glm::vec2 playerPos = m_Player->GetPosition();
+        int level = m_Player->GetWeaponLevel();
+
+        if (level == 1) {
+            // 等級 1：單發 (正中央)
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
+
+        } else if (level == 2) {
+            // 等級 2：雙排 (左右各偏移 15 像素)
+            glm::vec2 leftPos = {playerPos.x - 15.0f, playerPos.y};
+            glm::vec2 rightPos = {playerPos.x + 15.0f, playerPos.y};
+
+            m_Bullets.push_back(std::make_shared<Bullet>(leftPos));
+            m_Bullets.push_back(std::make_shared<Bullet>(rightPos));
+
+        } else if (level >= 3) {
+            // 等級 3：三排 (正中央 + 左右各偏移 25 像素，且稍微往後一點)
+            glm::vec2 leftPos = {playerPos.x - 25.0f, playerPos.y - 10.0f};
+            glm::vec2 rightPos = {playerPos.x + 25.0f, playerPos.y - 10.0f};
+
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
+            m_Bullets.push_back(std::make_shared<Bullet>(leftPos));
+            m_Bullets.push_back(std::make_shared<Bullet>(rightPos));
+        }
     }
 
     // --- 3. 更新與繪製子彈 ---
@@ -172,12 +194,13 @@ void App::Update() {
         if (distToPlayer < 40.0f) {
             // 觸發道具效果！
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
-                // TODO: 讓玩家武器升級 (例如你可以去 Player 類別寫一個 UpgradeWeapon 函式)
-                // m_Player->UpgradeWeapon();
-                LOG_INFO("拾取武器升級！"); // 先印出訊息測試
-            }
 
-            // 拾取後，將道具從畫面上移除
+                // --- 呼叫玩家的升級函式 ---
+                m_Player->UpgradeWeapon();
+
+                LOG_INFO("武器升級！目前等級: {}", m_Player->GetWeaponLevel());
+            }
+            // 拾取後移除道具
             itemIt = m_Items.erase(itemIt);
 
         } else if ((*itemIt)->GetPosition().y < -400.0f) {

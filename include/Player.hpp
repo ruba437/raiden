@@ -11,6 +11,7 @@ private:
     std::shared_ptr<Util::Image> m_ImgStraight;
     std::shared_ptr<Util::Image> m_ImgLeft;
     std::shared_ptr<Util::Image> m_ImgRight;
+    int m_WeaponLevel = 1;
 
 public:
     Player() {
@@ -50,6 +51,16 @@ public:
 
     // 取得當前位置
     glm::vec2 GetPosition() const { return m_Transform.translation; }
+
+    int GetWeaponLevel() const { return m_WeaponLevel; }
+
+    // 升級武器
+    void UpgradeWeapon() {
+        // 假設最高升級到等級 3
+        if (m_WeaponLevel < 3) {
+            m_WeaponLevel++;
+        }
+    }
 };
 
 #endif
