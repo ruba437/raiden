@@ -8,6 +8,7 @@ set(INCLUDE_FILES
     Bullet.hpp
     Background.hpp
         Enemy.hpp
+        Item.hpp
 )
 
 set(TEST_FILES

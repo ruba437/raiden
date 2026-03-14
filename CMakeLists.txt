@@ -39,6 +39,7 @@ add_executable(${PROJECT_NAME}
         include/Bullet.hpp
         include/Background.hpp
         include/Enemy.hpp
+        include/Item.hpp
 )
 
 if(MSVC)

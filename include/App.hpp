@@ -6,6 +6,7 @@
 #include "Bullet.hpp"
 #include "Background.hpp"
 #include "Enemy.hpp"
+#include "Item.hpp"
 #include <memory>
 #include <vector>
 
@@ -37,6 +38,8 @@ private:
 
     std::vector<std::shared_ptr<Enemy>> m_Enemies;
     float m_EnemySpawnTimer = 0.0f;
+
+    std::vector<std::shared_ptr<Item>> m_Items;
 };
 
 #endif

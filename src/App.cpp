@@ -4,6 +4,7 @@
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
+#include <cstdlib>
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -20,6 +21,12 @@ void App::Start() {
     m_Bg2->SetPosition({0, h}); // 精準放在第一張上方，不要多 1 像素也不要少
 
     m_Player = std::make_shared<Player>();
+
+    // 直接在畫面中央偏上方生成一個測試用的武器升級道具
+    // 假設 x = 0.0f, y = 200.0f
+    auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::WEAPON_UPGRADE);
+    m_Items.push_back(testItem);
+
     m_CurrentState = State::UPDATE;
 }
 
@@ -115,18 +122,22 @@ void App::Update() {
 
     // --- 2. 碰撞偵測 (子彈 vs 敵機) ---
     for (auto bulletIt = m_Bullets.begin(); bulletIt != m_Bullets.end(); ) {
-        bool bulletHit = false; // 標記這顆子彈是否打中敵人
+        bool bulletHit = false;
 
         for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
-            // 計算子彈與敵機之間的距離
             float dist = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
-            // 碰撞判定半徑 (假設 30.0f，你可以根據圖片大小微調)
-            if (dist < 30.0f) {
-                // 距離夠近，判定擊中！
-                enemyIt = m_Enemies.erase(enemyIt); // 從畫面上移除敵機
-                bulletHit = true;                   // 標記子彈已觸發碰撞
-                break; // 一顆子彈一次只能打一架敵機，直接跳出內層迴圈
+            if (dist < 30.0f) { // 擊中敵機
+                // --- 新增：機率掉落道具 (例如 20% 機率) ---
+                if (std::rand() % 100 < 20) {
+                    // 在敵機死亡的位置生成一個武器升級道具
+                    auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE);
+                    m_Items.push_back(newItem);
+                }
+
+                enemyIt = m_Enemies.erase(enemyIt);
+                bulletHit = true;
+                break;
             } else {
                 ++enemyIt;
             }
@@ -150,11 +161,39 @@ void App::Update() {
         }
     }
 
+    // --- 2. 新增：玩家與道具的碰撞偵測 (拾取道具) ---
+    for (auto itemIt = m_Items.begin(); itemIt != m_Items.end(); ) {
+        (*itemIt)->Update(); // 更新道具位置
+
+        // 計算玩家與道具的距離
+        float distToPlayer = glm::distance(m_Player->GetPosition(), (*itemIt)->GetPosition());
+
+        // 假設玩家的拾取半徑是 40.0f
+        if (distToPlayer < 40.0f) {
+            // 觸發道具效果！
+            if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
+                // TODO: 讓玩家武器升級 (例如你可以去 Player 類別寫一個 UpgradeWeapon 函式)
+                // m_Player->UpgradeWeapon();
+                LOG_INFO("拾取武器升級！"); // 先印出訊息測試
+            }
+
+            // 拾取後，將道具從畫面上移除
+            itemIt = m_Items.erase(itemIt);
+
+        } else if ((*itemIt)->GetPosition().y < -400.0f) {
+            // 道具飛出畫面底部，沒被撿到，直接移除
+            itemIt = m_Items.erase(itemIt);
+        } else {
+            ++itemIt;
+        }
+    }
+
     // --- 5. 統一在這裡繪製所有物件 (確保層級正確) ---
     m_Bg1->Draw();
     m_Bg2->Draw();
     for (auto& enemy : m_Enemies) enemy->Draw();
     for (auto& bullet : m_Bullets) bullet->Draw();
+    for (auto& item : m_Items) item->Draw();
     m_Player->Draw();
 
     /* 原有的退出邏輯 */
