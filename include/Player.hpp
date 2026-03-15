@@ -12,6 +12,7 @@ private:
     std::shared_ptr<Util::Image> m_ImgLeft;
     std::shared_ptr<Util::Image> m_ImgRight;
     int m_WeaponLevel = 1;
+    int m_HP = 3;
 
 public:
     Player() {
@@ -61,6 +62,17 @@ public:
             m_WeaponLevel++;
         }
     }
+
+    int GetHP() const { return m_HP; }
+
+    // 受到傷害
+    void TakeDamage(int damage) {
+        m_HP -= damage;
+        if (m_HP < 0) m_HP = 0; // 避免血量變成負數
+    }
+
+    // 判斷是否死亡
+    bool IsDead() const { return m_HP <= 0; }
 };
 
 #endif

@@ -148,22 +148,26 @@ void App::Update() {
     // --- 1. 先更新敵機與子彈的位置 (不要在這裡 Draw) ---
     for (auto& enemy : m_Enemies) enemy->Update();
     for (auto& bullet : m_Bullets) bullet->Update();
+    for (auto& item : m_Items) item->Update();
 
     // --- 2. 碰撞偵測 (子彈 vs 敵機) ---
+    // ==========================================
+    // 2. 碰撞偵測：子彈 vs 敵機
+    // ==========================================
     for (auto bulletIt = m_Bullets.begin(); bulletIt != m_Bullets.end(); ) {
         bool bulletHit = false;
 
         for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
-            float dist = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
+            // 計算子彈與敵機的距離
+            float distToEnemy = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
-            if (dist < 30.0f) { // 擊中敵機
-                // --- 新增：機率掉落道具 (例如 20% 機率) ---
+            if (distToEnemy < 30.0f) { // 子彈擊中敵機
+                // 20% 機率掉落道具
                 if (std::rand() % 100 < 20) {
-                    // 在敵機死亡的位置生成一個武器升級道具
                     auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE);
                     m_Items.push_back(newItem);
                 }
-
+                // 移除敵機
                 enemyIt = m_Enemies.erase(enemyIt);
                 bulletHit = true;
                 break;
@@ -172,8 +176,7 @@ void App::Update() {
             }
         }
 
-        // --- 3. 檢查子彈是否該被移除 ---
-        // 如果打中敵人了，或者飛出畫面頂部了，就把子彈移除
+        // 檢查子彈是否擊中或飛出畫面，若是則移除
         if (bulletHit || (*bulletIt)->GetPosition().y > 500.0f) {
             bulletIt = m_Bullets.erase(bulletIt);
         } else {
@@ -181,8 +184,29 @@ void App::Update() {
         }
     }
 
-    // --- 4. 移除飛出畫面底部的敵機 ---
+    // ==========================================
+    // 3. 碰撞偵測：玩家 vs 敵機
+    // ==========================================
     for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
+        // 計算玩家與敵機的距離
+        float distToPlayer = glm::distance(m_Player->GetPosition(), (*enemyIt)->GetPosition());
+
+        if (distToPlayer < 35.0f) { // 玩家撞到敵機
+            m_Player->TakeDamage(1);
+            LOG_INFO("💥 撞擊敵機！玩家扣血，剩餘血量: {}", m_Player->GetHP());
+
+            enemyIt = m_Enemies.erase(enemyIt); // 敵機撞毀
+
+            // 檢查玩家是否死亡
+            if (m_Player->IsDead()) {
+                LOG_INFO("💀 玩家血量歸零，遊戲結束！");
+                m_CurrentState = State::END;
+                break;
+            }
+            continue;
+        }
+
+        // 移除飛出畫面底部的敵機
         if ((*enemyIt)->GetPosition().y < -400.0f) {
             enemyIt = m_Enemies.erase(enemyIt);
         } else {
@@ -190,30 +214,24 @@ void App::Update() {
         }
     }
 
-    // --- 2. 新增：玩家與道具的碰撞偵測 (拾取道具) ---
+    // ==========================================
+    // 4. 碰撞偵測：玩家 vs 道具 (拾取道具)
+    // ==========================================
     for (auto itemIt = m_Items.begin(); itemIt != m_Items.end(); ) {
-        (*itemIt)->Update(); // 更新道具位置
-
         // 計算玩家與道具的距離
         float distToPlayer = glm::distance(m_Player->GetPosition(), (*itemIt)->GetPosition());
 
-        // 假設玩家的拾取半徑是 40.0f
-        if (distToPlayer < 40.0f) {
-            // 觸發道具效果！
+        if (distToPlayer < 40.0f) { // 玩家吃到道具
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
-
-                // --- 呼叫玩家的升級函式 ---
                 m_Player->UpgradeWeapon();
-
                 LOG_INFO("武器升級！目前等級: {}", m_Player->GetWeaponLevel());
             }
-            // 拾取後移除道具
-            itemIt = m_Items.erase(itemIt);
-
-        } else if ((*itemIt)->GetPosition().y < -400.0f) {
-            // 道具飛出畫面底部，沒被撿到，直接移除
-            itemIt = m_Items.erase(itemIt);
-        } else {
+            itemIt = m_Items.erase(itemIt); // 拾取後移除道具
+        }
+        else if ((*itemIt)->GetPosition().y < -400.0f) {
+            itemIt = m_Items.erase(itemIt); // 道具飛出畫面底部移除
+        }
+        else {
             ++itemIt;
         }
     }
@@ -222,8 +240,8 @@ void App::Update() {
     m_Bg1->Draw();
     m_Bg2->Draw();
     for (auto& enemy : m_Enemies) enemy->Draw();
-    for (auto& bullet : m_Bullets) bullet->Draw();
     for (auto& item : m_Items) item->Draw();
+    for (auto& bullet : m_Bullets) bullet->Draw();
     m_Player->Draw();
 
     /* 原有的退出邏輯 */
