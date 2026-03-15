@@ -65,17 +65,16 @@ void App::Update() {
     }
 
     // --- 2. 偵測攻擊輸入 ---
-    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) { // 建議配合冷卻時間使用
-
+    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
         glm::vec2 playerPos = m_Player->GetPosition();
         int level = m_Player->GetWeaponLevel();
 
         if (level == 1) {
-            // 等級 1：單發 (正中央)
+            // 等級 1：單發正中央 (使用預設速度)
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
 
         } else if (level == 2) {
-            // 等級 2：雙排 (左右各偏移 15 像素)
+            // 等級 2：雙排直飛
             glm::vec2 leftPos = {playerPos.x - 15.0f, playerPos.y};
             glm::vec2 rightPos = {playerPos.x + 15.0f, playerPos.y};
 
@@ -83,13 +82,21 @@ void App::Update() {
             m_Bullets.push_back(std::make_shared<Bullet>(rightPos));
 
         } else if (level >= 3) {
-            // 等級 3：三排 (正中央 + 左右各偏移 25 像素，且稍微往後一點)
-            glm::vec2 leftPos = {playerPos.x - 25.0f, playerPos.y - 10.0f};
-            glm::vec2 rightPos = {playerPos.x + 25.0f, playerPos.y - 10.0f};
+            // 等級 3：中間兩排直飛 + 左右兩側斜向散彈
 
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-            m_Bullets.push_back(std::make_shared<Bullet>(leftPos));
-            m_Bullets.push_back(std::make_shared<Bullet>(rightPos));
+            // 1. 中間兩顆 (直飛)
+            glm::vec2 innerLeftPos = {playerPos.x - 10.0f, playerPos.y};
+            glm::vec2 innerRightPos = {playerPos.x + 10.0f, playerPos.y};
+            m_Bullets.push_back(std::make_shared<Bullet>(innerLeftPos, glm::vec2(0.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(innerRightPos, glm::vec2(0.0f, 10.0f)));
+
+            // 2. 左右外側兩顆 (斜飛)
+            glm::vec2 outerLeftPos = {playerPos.x - 25.0f, playerPos.y - 10.0f};
+            glm::vec2 outerRightPos = {playerPos.x + 25.0f, playerPos.y - 10.0f};
+
+            // 給予斜向的 Velocity，例如 X 軸向外擴散 3.0f，Y 軸向上 10.0f
+            m_Bullets.push_back(std::make_shared<Bullet>(outerLeftPos, glm::vec2(-3.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(outerRightPos, glm::vec2(3.0f, 10.0f)));
         }
     }
 
