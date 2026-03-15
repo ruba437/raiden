@@ -40,6 +40,7 @@ private:
     float m_EnemySpawnTimer = 0.0f;
 
     std::vector<std::shared_ptr<Item>> m_Items;
+    std::vector<std::shared_ptr<Bullet>> m_EnemyBullets;
 };
 
 #endif

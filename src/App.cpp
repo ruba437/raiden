@@ -128,7 +128,7 @@ void App::Update() {
         m_Enemies.push_back(newEnemy);
 
         // 重置計時器 (假設 60 幀約 1 秒，這裡設定約 1 秒生一隻)
-        m_EnemySpawnTimer = 60.0f;
+        m_EnemySpawnTimer = 120.0f;
     }
 
     // --- 2. 更新與繪製敵機 ---
@@ -146,8 +146,26 @@ void App::Update() {
     }
 
     // --- 1. 先更新敵機與子彈的位置 (不要在這裡 Draw) ---
-    for (auto& enemy : m_Enemies) enemy->Update();
+    for (auto& enemy : m_Enemies) {
+        enemy->Update();
+
+        // --- 新增：敵機發射子彈邏輯 ---
+        if (enemy->ReadyToShoot()) {
+            // 產生一顆向下飛的子彈 (Velocity Y 為負數，例如 -8.0f)
+            // 我們在這裡多傳入一個參數：敵機子彈的圖片路徑
+            auto enemyBullet = std::make_shared<Bullet>(
+                enemy->GetPosition(),
+                glm::vec2(0.0f, -8.0f),
+                RESOURCE_DIR "/Image/bullet/enemy_attack_1.png"
+            );
+            m_EnemyBullets.push_back(enemyBullet);
+
+            // 重置該敵機的計時器
+            enemy->ResetShootTimer();
+        }
+    }
     for (auto& bullet : m_Bullets) bullet->Update();
+    for (auto& bullet : m_EnemyBullets) bullet->Update(); // <-- 新增：更新敵機子彈位置
     for (auto& item : m_Items) item->Update();
 
     // --- 2. 碰撞偵測 (子彈 vs 敵機) ---
@@ -236,12 +254,42 @@ void App::Update() {
         }
     }
 
+    // ==========================================
+    // 4.5 新增：碰撞偵測：敵機子彈 vs 玩家
+    // ==========================================
+    for (auto bulletIt = m_EnemyBullets.begin(); bulletIt != m_EnemyBullets.end(); ) {
+        // 計算敵機子彈與玩家的距離
+        float distToPlayer = glm::distance(m_Player->GetPosition(), (*bulletIt)->GetPosition());
+
+        // 子彈的判定半徑通常比較小 (例如 20.0f)，這樣玩家比較好閃躲
+        if (distToPlayer < 20.0f) {
+            m_Player->TakeDamage(1);
+            LOG_INFO("💥 被敵機子彈擊中！剩餘血量: {}", m_Player->GetHP());
+
+            bulletIt = m_EnemyBullets.erase(bulletIt); // 移除這顆子彈
+
+            if (m_Player->IsDead()) {
+                LOG_INFO("💀 玩家血量歸零，遊戲結束！");
+                m_CurrentState = State::END;
+                break;
+            }
+        }
+        else if ((*bulletIt)->GetPosition().y < -400.0f) {
+            // 敵機子彈飛出畫面底部，移除
+            bulletIt = m_EnemyBullets.erase(bulletIt);
+        }
+        else {
+            ++bulletIt;
+        }
+    }
+
     // --- 5. 統一在這裡繪製所有物件 (確保層級正確) ---
     m_Bg1->Draw();
     m_Bg2->Draw();
     for (auto& enemy : m_Enemies) enemy->Draw();
     for (auto& item : m_Items) item->Draw();
     for (auto& bullet : m_Bullets) bullet->Draw();
+    for (auto& bullet : m_EnemyBullets) bullet->Draw();
     m_Player->Draw();
 
     /* 原有的退出邏輯 */
