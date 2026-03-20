@@ -68,7 +68,7 @@ public:
     void ChangeWeapon(WeaponType newType) {
         if (m_WeaponType == newType) {
             // 如果吃到同一種武器，就升級
-            if (m_WeaponLevel < 3) m_WeaponLevel++;
+            if (m_WeaponLevel < 5) m_WeaponLevel++;
         } else {
             // 如果吃到不同種武器，切換過去，但火力等級通常會重置為 1 或保持不變
             // 這裡我們先設定為保持等級，玩起來比較爽快
@@ -79,7 +79,7 @@ public:
     int GetMissileLevel() const { return m_MissileLevel; }
 
     void UpgradeMissile() {
-        if (m_MissileLevel < 3) m_MissileLevel++; // 飛彈最多也升到 3 級
+        if (m_MissileLevel < 5) m_MissileLevel++;
     }
 
     int GetHP() const { return m_HP; }

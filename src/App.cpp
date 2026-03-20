@@ -82,11 +82,25 @@ void App::Update() {
         } else if (mainlevel == 2) {
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}));
-        } else if (mainlevel >= 3) {
+        } else if (mainlevel == 3) {
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 10.0f)));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 10.0f)));
+        } else if (mainlevel == 4) {
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 30.0f, playerPos.y - 10.0f}, glm::vec2(-4.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 30.0f, playerPos.y - 10.0f}, glm::vec2(4.0f, 10.0f)));
+        } else if (mainlevel >= 5) {
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 12.0f, playerPos.y - 5.0f}, glm::vec2(-1.5f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 12.0f, playerPos.y - 5.0f}, glm::vec2(1.5f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 24.0f, playerPos.y - 10.0f}, glm::vec2(-3.5f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 24.0f, playerPos.y - 10.0f}, glm::vec2(3.5f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 36.0f, playerPos.y - 15.0f}, glm::vec2(-6.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 36.0f, playerPos.y - 15.0f}, glm::vec2(6.0f, 10.0f)));
         }
     }
     else if (weaponType == Player::WeaponType::LASER) {
@@ -100,11 +114,22 @@ void App::Update() {
             // 等級 2：兩道極近的雷射並排
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (mainlevel >= 3) {
+        } else if (mainlevel == 3) {
             // 等級 3：三道雷射並排，中間稍微往前凸出
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+        } else if (mainlevel == 4) {
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+        } else if (mainlevel >= 5) {
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
         }
     }
         // ==========================================
