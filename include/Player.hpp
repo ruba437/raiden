@@ -7,8 +7,8 @@
 
 class Player : public Util::GameObject {
 public:
-    // --- 1. 必須先把 enum 定義放在最前面 ---
     enum class WeaponType { DEFAULT, LASER };
+
 private:
     // 儲存三種狀態的圖片指標
     std::shared_ptr<Util::Image> m_ImgStraight;
@@ -17,6 +17,7 @@ private:
     int m_WeaponLevel = 1;
     int m_HP = 3;
     WeaponType m_WeaponType = WeaponType::DEFAULT; // 預設武器為散彈
+    int m_MissileLevel = 0;
 
 public:
     Player() {
@@ -73,6 +74,12 @@ public:
             // 這裡我們先設定為保持等級，玩起來比較爽快
             m_WeaponType = newType;
         }
+    }
+
+    int GetMissileLevel() const { return m_MissileLevel; }
+
+    void UpgradeMissile() {
+        if (m_MissileLevel < 3) m_MissileLevel++; // 飛彈最多也升到 3 級
     }
 
     int GetHP() const { return m_HP; }

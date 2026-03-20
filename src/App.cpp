@@ -70,19 +70,19 @@ void App::Update() {
     // --- 2. 偵測攻擊輸入 ---
     if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
         glm::vec2 playerPos = m_Player->GetPosition();
-        int level = m_Player->GetWeaponLevel();
+        int mainlevel = m_Player->GetWeaponLevel();
         auto weaponType = m_Player->GetWeaponType();
 
         if (weaponType == Player::WeaponType::DEFAULT) {
         // ==========================================
         // 原本的散彈 (DEFAULT) 邏輯放這裡
         // ==========================================
-        if (level == 1) {
+        if (mainlevel == 1) {
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-        } else if (level == 2) {
+        } else if (mainlevel == 2) {
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}));
-        } else if (level >= 3) {
+        } else if (mainlevel >= 3) {
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 10.0f)));
@@ -94,19 +94,47 @@ void App::Update() {
         // 新增的雷射 (LASER) 邏輯
         // 特色：速度極快 (Velocity Y = 25.0f)，筆直向前，使用 laser.png
         // ==========================================
-        if (level == 1) {
+        if (mainlevel == 1) {
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (level == 2) {
+        } else if (mainlevel == 2) {
             // 等級 2：兩道極近的雷射並排
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (level >= 3) {
+        } else if (mainlevel >= 3) {
             // 等級 3：三道雷射並排，中間稍微往前凸出
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
             m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
         }
     }
+        // ==========================================
+    // 系統 B：發射副武器 (飛彈) - 與主武器並存！
+    // ==========================================
+    int missileLevel = m_Player->GetMissileLevel();
+
+    // 只要等級大於 0，就代表有飛彈系統，跟主武器一起發射
+    if (missileLevel > 0) {
+        if (missileLevel == 1) {
+            // 等級 1：兩枚飛彈
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+        }
+        else if (missileLevel == 2) {
+            // 等級 2：四枚飛彈直飛
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 35.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 35.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+        }
+        else if (missileLevel >= 3) {
+            // 等級 3：四枚飛彈，外側兩枚微幅向外擴展
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 35.0f, playerPos.y - 10.0f}, glm::vec2(-1.5f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 35.0f, playerPos.y - 10.0f}, glm::vec2(1.5f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+        }
+    }
+
     }
 
     // --- 3. 更新與繪製子彈 ---
@@ -261,17 +289,21 @@ void App::Update() {
 
         if (distToPlayer < 40.0f) {
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
-                m_Player->ChangeWeapon(Player::WeaponType::DEFAULT); // 切換為散彈
-                LOG_INFO("切換為散彈 / 火力升級！");
+                m_Player->ChangeWeapon(Player::WeaponType::DEFAULT);
+                LOG_INFO("主武器：切換為散彈！");
             }
             else if ((*itemIt)->GetType() == Item::Type::WEAPON_LASER) {
-                m_Player->ChangeWeapon(Player::WeaponType::LASER); // 切換為雷射
-                LOG_INFO("切換為雷射 / 火力升級！");
+                m_Player->ChangeWeapon(Player::WeaponType::LASER);
+                LOG_INFO("主武器：切換為雷射！");
+            }
+            else if ((*itemIt)->GetType() == Item::Type::WEAPON_MISSILE) {
+                // --- 修改這裡：獨立升級副武器，不影響主武器 ---
+                m_Player->UpgradeMissile();
+                LOG_INFO("副武器：飛彈升級！目前等級: {}", m_Player->GetMissileLevel());
             }
             else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS) {
                 m_Score += 1000;
                 m_ScoreUI->UpdateScore(m_Score);
-                LOG_INFO("獲得分數加成！");
             }
             itemIt = m_Items.erase(itemIt);
         }

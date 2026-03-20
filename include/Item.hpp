@@ -6,7 +6,7 @@
 
 class Item : public Util::GameObject {
 public:
-    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, SCORE_BONUS };
+    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, WEAPON_MISSILE, SCORE_BONUS };
 
     Item(const glm::vec2& startPosition, Type type) : m_Type(type) {
         UpdateImage(); // 初始化時設定圖片
@@ -32,9 +32,11 @@ public:
 
             // 輪流切換道具種類
             if (m_Type == Type::WEAPON_UPGRADE) {
-                m_Type = Type::WEAPON_LASER;
+                m_Type = Type::WEAPON_LASER;     // 散彈 -> 雷射
+            } else if (m_Type == Type::WEAPON_LASER) {
+                m_Type = Type::WEAPON_MISSILE;   // 雷射 -> 飛彈
             } else {
-                m_Type = Type::WEAPON_UPGRADE;
+                m_Type = Type::WEAPON_UPGRADE;   // 飛彈 -> 散彈
             }
 
             // 種類改變後，更新對應的圖片
@@ -55,10 +57,12 @@ private:
     // 輔助函式：根據目前的 m_Type 來決定要顯示哪張圖片
     void UpdateImage() {
         if (m_Type == Type::WEAPON_UPGRADE) {
-            m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/missile_upgrade.png");
+            m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/default_upgrade.png");
         }else if (m_Type == Type::WEAPON_LASER) {
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/laser_upgrade.png");
-        }else {
+        }else if (m_Type == Type::WEAPON_MISSILE) {
+            m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/missile_upgrade.png");
+        } else {
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/gold_medal.png");
         }
     }
