@@ -6,6 +6,9 @@
 #include <algorithm>
 
 class Player : public Util::GameObject {
+public:
+    // --- 1. 必須先把 enum 定義放在最前面 ---
+    enum class WeaponType { DEFAULT, LASER };
 private:
     // 儲存三種狀態的圖片指標
     std::shared_ptr<Util::Image> m_ImgStraight;
@@ -13,6 +16,7 @@ private:
     std::shared_ptr<Util::Image> m_ImgRight;
     int m_WeaponLevel = 1;
     int m_HP = 3;
+    WeaponType m_WeaponType = WeaponType::DEFAULT; // 預設武器為散彈
 
 public:
     Player() {
@@ -23,6 +27,10 @@ public:
         m_Drawable = m_ImgStraight;
         m_ZIndex = 10; // 設定層級，確保飛機在背景上方
     }
+
+
+
+    WeaponType GetWeaponType() const { return m_WeaponType; }
 
     // 根據 X 軸的移動方向來切換圖片
     void SetDirection(float dx) {
@@ -55,11 +63,15 @@ public:
 
     int GetWeaponLevel() const { return m_WeaponLevel; }
 
-    // 升級武器
-    void UpgradeWeapon() {
-        // 假設最高升級到等級 3
-        if (m_WeaponLevel < 3) {
-            m_WeaponLevel++;
+    // 切換武器並升級
+    void ChangeWeapon(WeaponType newType) {
+        if (m_WeaponType == newType) {
+            // 如果吃到同一種武器，就升級
+            if (m_WeaponLevel < 3) m_WeaponLevel++;
+        } else {
+            // 如果吃到不同種武器，切換過去，但火力等級通常會重置為 1 或保持不變
+            // 這裡我們先設定為保持等級，玩起來比較爽快
+            m_WeaponType = newType;
         }
     }
 

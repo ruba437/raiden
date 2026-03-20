@@ -14,13 +14,14 @@ public:
     // 修改建構子：新增一個 imagePath 參數，並設定預設值為玩家子彈的圖片
     Bullet(const glm::vec2& position,
            const glm::vec2& velocity = {0.0f, 10.0f},
-           const std::string& imagePath = RESOURCE_DIR "/Image/bullet/missile_1.png") // <--- 修改這裡
+           const std::string& imagePath = RESOURCE_DIR "/Image/bullet/default_attack.png") // <--- 修改這裡
         : m_Velocity(velocity) {
 
         // 使用傳入的 imagePath 來載入圖片
         m_Drawable = std::make_shared<Util::Image>(imagePath);
         m_Transform.translation = position;
         m_ZIndex = 5;
+        m_Transform.scale = {0.5f, 0.5f};
 
         // (進階選用) 如果你之前有加上根據速度旋轉圖片的邏輯，請保留在這裡：
         // if (velocity.x != 0.0f || velocity.y != 10.0f) { // 只有非預設向上的子彈才旋轉

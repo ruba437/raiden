@@ -71,36 +71,42 @@ void App::Update() {
     if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
         glm::vec2 playerPos = m_Player->GetPosition();
         int level = m_Player->GetWeaponLevel();
+        auto weaponType = m_Player->GetWeaponType();
 
+        if (weaponType == Player::WeaponType::DEFAULT) {
+        // ==========================================
+        // 原本的散彈 (DEFAULT) 邏輯放這裡
+        // ==========================================
         if (level == 1) {
-            // 等級 1：單發正中央 (使用預設速度)
             m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-
         } else if (level == 2) {
-            // 等級 2：雙排直飛
-            glm::vec2 leftPos = {playerPos.x - 15.0f, playerPos.y};
-            glm::vec2 rightPos = {playerPos.x + 15.0f, playerPos.y};
-
-            m_Bullets.push_back(std::make_shared<Bullet>(leftPos));
-            m_Bullets.push_back(std::make_shared<Bullet>(rightPos));
-
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}));
         } else if (level >= 3) {
-            // 等級 3：中間兩排直飛 + 左右兩側斜向散彈
-
-            // 1. 中間兩顆 (直飛)
-            glm::vec2 innerLeftPos = {playerPos.x - 10.0f, playerPos.y};
-            glm::vec2 innerRightPos = {playerPos.x + 10.0f, playerPos.y};
-            m_Bullets.push_back(std::make_shared<Bullet>(innerLeftPos, glm::vec2(0.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(innerRightPos, glm::vec2(0.0f, 10.0f)));
-
-            // 2. 左右外側兩顆 (斜飛)
-            glm::vec2 outerLeftPos = {playerPos.x - 25.0f, playerPos.y - 10.0f};
-            glm::vec2 outerRightPos = {playerPos.x + 25.0f, playerPos.y - 10.0f};
-
-            // 給予斜向的 Velocity，例如 X 軸向外擴散 3.0f，Y 軸向上 10.0f
-            m_Bullets.push_back(std::make_shared<Bullet>(outerLeftPos, glm::vec2(-3.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(outerRightPos, glm::vec2(3.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 10.0f)));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 10.0f)));
         }
+    }
+    else if (weaponType == Player::WeaponType::LASER) {
+        // ==========================================
+        // 新增的雷射 (LASER) 邏輯
+        // 特色：速度極快 (Velocity Y = 25.0f)，筆直向前，使用 laser.png
+        // ==========================================
+        if (level == 1) {
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+        } else if (level == 2) {
+            // 等級 2：兩道極近的雷射並排
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+        } else if (level >= 3) {
+            // 等級 3：三道雷射並排，中間稍微往前凸出
+            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+        }
+    }
     }
 
     // --- 3. 更新與繪製子彈 ---
@@ -182,16 +188,25 @@ void App::Update() {
             // 計算子彈與敵機的距離
             float distToEnemy = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
-            if (distToEnemy < 30.0f) { // 子彈擊中敵機
+            if (distToEnemy < 30.0f) {
                 m_Score += 100;
-                m_ScoreUI->UpdateScore(m_Score); // 更新 UI 顯示
+                m_ScoreUI->UpdateScore(m_Score);
 
-                // 掉落道具機率
-                if (std::rand() % 100 < 50) {
+                // --- 修改：獨立的道具掉落機率 ---
+                int dropChance = std::rand() % 100; // 產生 0 到 99 的隨機數
+
+                if (dropChance < 50) {
+                    // 0~9 (10% 機率)：掉落武器升級道具
                     auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE);
                     m_Items.push_back(newItem);
                 }
-                // 移除敵機
+                if (dropChance < 30) {
+                    // 10~29 (20% 機率)：掉落分數道具
+                    auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS);
+                    m_Items.push_back(newItem);
+                }
+
+                // 移除敵機與子彈的邏輯...
                 enemyIt = m_Enemies.erase(enemyIt);
                 bulletHit = true;
                 break;
@@ -244,20 +259,21 @@ void App::Update() {
     for (auto itemIt = m_Items.begin(); itemIt != m_Items.end(); ) {
         float distToPlayer = glm::distance(m_Player->GetPosition(), (*itemIt)->GetPosition());
 
-        if (distToPlayer < 40.0f) { // 玩家吃到道具
-
-            // 根據吃到的道具種類，執行不同效果
+        if (distToPlayer < 40.0f) {
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
-                m_Player->UpgradeWeapon();
-                LOG_INFO("火力升級！目前等級: {}", m_Player->GetWeaponLevel());
+                m_Player->ChangeWeapon(Player::WeaponType::DEFAULT); // 切換為散彈
+                LOG_INFO("切換為散彈 / 火力升級！");
+            }
+            else if ((*itemIt)->GetType() == Item::Type::WEAPON_LASER) {
+                m_Player->ChangeWeapon(Player::WeaponType::LASER); // 切換為雷射
+                LOG_INFO("切換為雷射 / 火力升級！");
             }
             else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS) {
                 m_Score += 1000;
-                m_ScoreUI->UpdateScore(m_Score); // 更新 UI 顯示
+                m_ScoreUI->UpdateScore(m_Score);
                 LOG_INFO("獲得分數加成！");
             }
-
-            itemIt = m_Items.erase(itemIt); // 拾取後移除道具
+            itemIt = m_Items.erase(itemIt);
         }
         else if ((*itemIt)->GetPosition().y < -400.0f) {
             itemIt = m_Items.erase(itemIt); // 道具飛出畫面底部移除
