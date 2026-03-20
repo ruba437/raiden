@@ -40,6 +40,7 @@ add_executable(${PROJECT_NAME}
         include/Background.hpp
         include/Enemy.hpp
         include/Item.hpp
+        include/Score.hpp
 )
 
 if(MSVC)

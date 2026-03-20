@@ -9,6 +9,7 @@ set(INCLUDE_FILES
     Background.hpp
         Enemy.hpp
         Item.hpp
+        Score.hpp
 )
 
 set(TEST_FILES

@@ -27,6 +27,9 @@ void App::Start() {
     auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::WEAPON_UPGRADE);
     m_Items.push_back(testItem);
 
+    m_Score = 0; // 遊戲開始分數歸零
+    m_ScoreUI = std::make_shared<ScoreUI>();
+
     m_CurrentState = State::UPDATE;
 }
 
@@ -116,7 +119,7 @@ void App::Update() {
 
     // --- 1. 生成敵機邏輯 ---
     // 每一幀減少計時器
-    m_EnemySpawnTimer -= 1.0f;
+    m_EnemySpawnTimer -= 2.0f;
 
     // 當計時器歸零或小於零時，生成一隻新敵機
     if (m_EnemySpawnTimer <= 0.0f) {
@@ -168,7 +171,7 @@ void App::Update() {
     for (auto& bullet : m_EnemyBullets) bullet->Update(); // <-- 新增：更新敵機子彈位置
     for (auto& item : m_Items) item->Update();
 
-    // --- 2. 碰撞偵測 (子彈 vs 敵機) ---
+
     // ==========================================
     // 2. 碰撞偵測：子彈 vs 敵機
     // ==========================================
@@ -180,8 +183,11 @@ void App::Update() {
             float distToEnemy = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
             if (distToEnemy < 30.0f) { // 子彈擊中敵機
-                // 20% 機率掉落道具
-                if (std::rand() % 100 < 20) {
+                m_Score += 100;
+                m_ScoreUI->UpdateScore(m_Score); // 更新 UI 顯示
+
+                // 掉落道具機率
+                if (std::rand() % 100 < 50) {
                     auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE);
                     m_Items.push_back(newItem);
                 }
@@ -236,14 +242,21 @@ void App::Update() {
     // 4. 碰撞偵測：玩家 vs 道具 (拾取道具)
     // ==========================================
     for (auto itemIt = m_Items.begin(); itemIt != m_Items.end(); ) {
-        // 計算玩家與道具的距離
         float distToPlayer = glm::distance(m_Player->GetPosition(), (*itemIt)->GetPosition());
 
         if (distToPlayer < 40.0f) { // 玩家吃到道具
+
+            // 根據吃到的道具種類，執行不同效果
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
                 m_Player->UpgradeWeapon();
-                LOG_INFO("武器升級！目前等級: {}", m_Player->GetWeaponLevel());
+                LOG_INFO("火力升級！目前等級: {}", m_Player->GetWeaponLevel());
             }
+            else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS) {
+                m_Score += 1000;
+                m_ScoreUI->UpdateScore(m_Score); // 更新 UI 顯示
+                LOG_INFO("獲得分數加成！");
+            }
+
             itemIt = m_Items.erase(itemIt); // 拾取後移除道具
         }
         else if ((*itemIt)->GetPosition().y < -400.0f) {
@@ -291,6 +304,7 @@ void App::Update() {
     for (auto& bullet : m_Bullets) bullet->Draw();
     for (auto& bullet : m_EnemyBullets) bullet->Draw();
     m_Player->Draw();
+    m_ScoreUI->Draw();
 
     /* 原有的退出邏輯 */
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {

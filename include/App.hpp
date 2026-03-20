@@ -7,6 +7,7 @@
 #include "Background.hpp"
 #include "Enemy.hpp"
 #include "Item.hpp"
+#include "Score.hpp"
 #include <memory>
 #include <vector>
 
@@ -41,6 +42,9 @@ private:
 
     std::vector<std::shared_ptr<Item>> m_Items;
     std::vector<std::shared_ptr<Bullet>> m_EnemyBullets;
+
+    int m_Score = 0;
+    std::shared_ptr<ScoreUI> m_ScoreUI;
 };
 
 #endif
