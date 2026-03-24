@@ -67,98 +67,160 @@ void App::Update() {
         m_Player->Move(glm::normalize(dir), speed);
     }
 
-    // --- 2. 偵測攻擊輸入 ---
-    if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
-        glm::vec2 playerPos = m_Player->GetPosition();
-        int mainlevel = m_Player->GetWeaponLevel();
-        auto weaponType = m_Player->GetWeaponType();
+    if (m_PlayerShootTimer > 0.0f) {
+        m_PlayerShootTimer -= 1.0f;
+    }
 
-        if (weaponType == Player::WeaponType::DEFAULT) {
-        // ==========================================
-        // 原本的散彈 (DEFAULT) 邏輯放這裡
-        // ==========================================
-        if (mainlevel == 1) {
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-        } else if (mainlevel == 2) {
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}));
-        } else if (mainlevel == 3) {
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 10.0f)));
-        } else if (mainlevel == 4) {
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 30.0f, playerPos.y - 10.0f}, glm::vec2(-4.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 30.0f, playerPos.y - 10.0f}, glm::vec2(4.0f, 10.0f)));
-        } else if (mainlevel >= 5) {
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 12.0f, playerPos.y - 5.0f}, glm::vec2(-1.5f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 12.0f, playerPos.y - 5.0f}, glm::vec2(1.5f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 24.0f, playerPos.y - 10.0f}, glm::vec2(-3.5f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 24.0f, playerPos.y - 10.0f}, glm::vec2(3.5f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 36.0f, playerPos.y - 15.0f}, glm::vec2(-6.0f, 10.0f)));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 36.0f, playerPos.y - 15.0f}, glm::vec2(6.0f, 10.0f)));
-        }
+    if (m_MissileShootTimer > 0.0f) {
+        m_MissileShootTimer -= 1.0f;
     }
-    else if (weaponType == Player::WeaponType::LASER) {
-        // ==========================================
-        // 新增的雷射 (LASER) 邏輯
-        // 特色：速度極快 (Velocity Y = 25.0f)，筆直向前，使用 laser.png
-        // ==========================================
-        if (mainlevel == 1) {
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (mainlevel == 2) {
-            // 等級 2：兩道極近的雷射並排
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (mainlevel == 3) {
-            // 等級 3：三道雷射並排，中間稍微往前凸出
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (mainlevel == 4) {
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-        } else if (mainlevel >= 5) {
-            m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+
+    // --- 2. 偵測攻擊輸入 ---
+    if (Util::Input::IsKeyPressed(Util::Keycode::SPACE)) {
+        glm::vec2 playerPos = m_Player->GetPosition();
+        if (m_PlayerShootTimer <= 0.0f) {
+            int mainlevel = m_Player->GetWeaponLevel();
+            auto weaponType = m_Player->GetWeaponType();
+
+            if (weaponType == Player::WeaponType::DEFAULT) {
+                // ==========================================
+                // 散彈 (DEFAULT) 邏輯
+                // ==========================================
+                if (mainlevel == 1) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(playerPos));
+                } else if (mainlevel == 2) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}));
+                } else if (mainlevel == 3) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 10.0f, playerPos.y}, glm::vec2(0.0f, 10.0f)));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 10.0f)));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 10.0f)));
+                }
+                else if (mainlevel >= 4) {
+                    // --- 使用資料驅動的方式來產生大量子彈 ---
+
+                    // 建立一個結構來儲存「一個發射方向」的基礎偏移與速度
+                    struct Stream { glm::vec2 posOffset; glm::vec2 velocity; };
+                    std::vector<Stream> streams;
+
+                    int parallelCount = 1; // 每個方向要並排幾顆子彈
+                    float spacing = 8.0f;  // 並排子彈之間的距離
+
+                    if (mainlevel == 4) {
+                        // 等級 4：5 個方向，每個方向並排 2 顆 (共 10 顆)
+                        parallelCount = 2;
+                        streams = {
+                            {{0.0f, 0.0f},     {0.0f, 10.0f}},   // 正中
+                            {{-15.0f, -5.0f},  {-2.0f, 10.0f}},  // 內左
+                            {{15.0f, -5.0f},   {2.0f, 10.0f}},   // 內右
+                            {{-30.0f, -10.0f}, {-4.0f, 10.0f}},  // 外左
+                            {{30.0f, -10.0f},  {4.0f, 10.0f}}    // 外右
+                        };
+                    } else if (mainlevel >= 5) {
+                        // 等級 5：7 個方向，每個方向並排 3 顆 (共 21 顆，極密集彈幕！)
+                        parallelCount = 3;
+                        spacing = 6.0f; // 數量多，間距稍微縮小一點
+                        streams = {
+                            {{0.0f, 0.0f},     {0.0f, 10.0f}},
+                            {{-12.0f, -5.0f},  {-1.5f, 10.0f}},
+                            {{12.0f, -5.0f},   {1.5f, 10.0f}},
+                            {{-24.0f, -10.0f}, {-3.5f, 10.0f}},
+                            {{24.0f, -10.0f},  {3.5f, 10.0f}},
+                            {{-36.0f, -15.0f}, {-6.0f, 10.0f}},
+                            {{36.0f, -15.0f},  {6.0f, 10.0f}}
+                        };
+                    }
+
+                    // 雙層迴圈：對每一個方向 (Stream)，產生 N 顆並排的子彈
+                    for (const auto& stream : streams) {
+                        for (int i = 0; i < parallelCount; ++i) {
+
+                            // 計算並排時的 X 軸置中偏移量
+                            // 例如排 3 顆，間距 6，則偏移依序為 -6, 0, 6
+                            float startX = -(parallelCount - 1) * spacing / 2.0f;
+                            float currentOffsetX = startX + (i * spacing);
+
+                            // 最終位置 = 玩家位置 + 該方向的基礎偏移 + 並排的微調偏移
+                            glm::vec2 finalPos = {
+                                playerPos.x + stream.posOffset.x + currentOffsetX,
+                                playerPos.y + stream.posOffset.y
+                            };
+
+                            m_Bullets.push_back(std::make_shared<Bullet>(finalPos, stream.velocity));
+                        }
+                    }
+                }
+            }
+            else if (weaponType == Player::WeaponType::LASER) {
+                // ==========================================
+                // 新增的雷射 (LASER) 邏輯
+                // 特色：速度極快 (Velocity Y = 25.0f)，筆直向前，使用 laser.png
+                // ==========================================
+                if (mainlevel == 1) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                } else if (mainlevel == 2) {
+                    // 等級 2：兩道極近的雷射並排
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 8.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                } else if (mainlevel == 3) {
+                    // 等級 3：三道雷射並排，中間稍微往前凸出
+                    m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 16.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                } else if (mainlevel == 4) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 12.0f, playerPos.y}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 28.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                } else if (mainlevel >= 5) {
+                    m_Bullets.push_back(std::make_shared<Bullet>(playerPos, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 18.0f, playerPos.y - 5.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                    m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 36.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 25.0f), RESOURCE_DIR "/Image/bullet/laser_attack.png"));
+                }
+            }
+            if (weaponType == Player::WeaponType::LASER) {
+                m_PlayerShootTimer = 5.0f;  // 雷射極快
+            } else {
+                m_PlayerShootTimer = 10.0f; // 散彈中等
+            }
         }
-    }
         // ==========================================
-    // 系統 B：發射副武器 (飛彈) - 與主武器並存！
+    // 系統 B：發射副武器 (飛彈) - 與主武器並存
     // ==========================================
     int missileLevel = m_Player->GetMissileLevel();
 
     // 只要等級大於 0，就代表有飛彈系統，跟主武器一起發射
-    if (missileLevel > 0) {
+    if (missileLevel > 0 && m_MissileShootTimer <= 0.0f) {
+        glm::vec2 accel = {0.0f, 0.1f};
+        std::string imgPath = RESOURCE_DIR "/Image/bullet/missile.png";
         if (missileLevel == 1) {
-            // 等級 1：兩枚飛彈
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 25.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 25.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            // 等級 1：兩枚飛彈，剛發射時稍微往外拋 (X 軸初速為 -2.0f 和 2.0f)
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 20.0f, playerPos.y}, glm::vec2(-2.0f, 1.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 20.0f, playerPos.y}, glm::vec2(2.0f, 1.0f), imgPath, accel));
         }
         else if (missileLevel == 2) {
-            // 等級 2：四枚飛彈直飛
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 35.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 35.0f, playerPos.y - 10.0f}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            // 等級 2：四枚飛彈
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}, glm::vec2(-1.0f, 2.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}, glm::vec2(1.0f, 2.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 30.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 0.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 30.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 0.0f), imgPath, accel));
         }
         else if (missileLevel >= 3) {
-            // 等級 3：四枚飛彈，外側兩枚微幅向外擴展
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 20.0f, playerPos.y}, glm::vec2(0.0f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 35.0f, playerPos.y - 10.0f}, glm::vec2(-1.5f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
-            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 35.0f, playerPos.y - 10.0f}, glm::vec2(1.5f, 7.0f), RESOURCE_DIR "/Image/bullet/missile.png"));
+            // 等級 3：四枚飛彈，更誇張的向外拋出軌跡
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 15.0f, playerPos.y}, glm::vec2(-1.5f, 2.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 15.0f, playerPos.y}, glm::vec2(1.5f, 2.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 30.0f, playerPos.y - 10.0f}, glm::vec2(-3.0f, 0.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 30.0f, playerPos.y - 10.0f}, glm::vec2(3.0f, 0.0f), imgPath, accel));
+            // 外側飛彈初速甚至帶有一點往後掉的感覺 (Y = -2.0f)，然後才往前衝刺
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x - 35.0f, playerPos.y - 10.0f}, glm::vec2(-4.0f, -2.0f), imgPath, accel));
+            m_Bullets.push_back(std::make_shared<Bullet>(glm::vec2{playerPos.x + 35.0f, playerPos.y - 10.0f}, glm::vec2(4.0f, -2.0f), imgPath, accel));
         }
+        m_MissileShootTimer = 60.0f;
     }
+
 
     }
 

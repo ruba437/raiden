@@ -9,15 +9,16 @@
 class Bullet : public Util::GameObject {
 private:
     glm::vec2 m_Velocity; // 儲存這顆子彈的飛行速度與方向
+    glm::vec2 m_Acceleration;
 
 public:
     // 修改建構子：新增一個 imagePath 參數，並設定預設值為玩家子彈的圖片
     Bullet(const glm::vec2& position,
            const glm::vec2& velocity = {0.0f, 10.0f},
-           const std::string& imagePath = RESOURCE_DIR "/Image/bullet/default_attack.png") // <--- 修改這裡
-        : m_Velocity(velocity) {
+           const std::string& imagePath = RESOURCE_DIR "/Image/bullet/default_attack.png",
+           const glm::vec2& acceleration = {0.0f, 0.0f})
+        : m_Velocity(velocity), m_Acceleration(acceleration) {
 
-        // 使用傳入的 imagePath 來載入圖片
         m_Drawable = std::make_shared<Util::Image>(imagePath);
         m_Transform.translation = position;
         m_ZIndex = 5;
@@ -31,6 +32,7 @@ public:
 
     void Update() {
         // 根據專屬的速度向量來移動
+        m_Velocity += m_Acceleration;
         m_Transform.translation += m_Velocity;
     }
 

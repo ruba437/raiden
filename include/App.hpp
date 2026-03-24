@@ -45,6 +45,8 @@ private:
 
     int m_Score = 0;
     std::shared_ptr<ScoreUI> m_ScoreUI;
+    float m_PlayerShootTimer = 0.0f;
+    float m_MissileShootTimer = 0.0f;
 };
 
 #endif
