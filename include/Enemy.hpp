@@ -25,17 +25,19 @@ public:
     }
 
     void Update(const glm::vec2& playerPos) {
-        // 計算這台敵機與玩家的直線距離
-        float distToPlayer = glm::distance(m_Transform.translation, playerPos);
+
+        // --- 修改：只計算敵機與玩家在 Y 軸上的絕對距離 ---
+        float distY = std::abs(m_Transform.translation.y - playerPos.y);
 
         // 單一突擊型邏輯：
-        if (distToPlayer < 350.0f) {
-            // 靠近玩家時：減速 (從 -5.0f 降到 -1.5f)，持續往下飛，並開始攻擊
+        if (distY < 150.0f) {
+            // 當進入玩家上方的 Y 軸警戒帶時：減速並開始攻擊
             m_Transform.translation.y -= 1.5f;
+
             m_CanShoot = true;
         } else {
-            // 還沒靠近時：快速進場 (速度 -5.0f)，且不開火
-            m_Transform.translation.y -= 5.0f;
+            // 還沒到達該高度時：快速進場
+            m_Transform.translation.y -= 4.0f;
             m_CanShoot = false;
         }
 

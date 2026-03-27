@@ -30,6 +30,33 @@ void App::Start() {
     m_Score = 0; // 遊戲開始分數歸零
     m_ScoreUI = std::make_shared<ScoreUI>();
 
+
+    // ==========================================
+    // 關卡設計 (Level Design) 初始化
+    // ==========================================
+    m_LevelTimer = 0.0f;
+    m_CurrentEventIndex = 0;
+
+    // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
+    // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
+    m_LevelEvents = {
+        // { 觸發幀數, { X座標, Y座標 } }
+        { 60.0f,   {   0.0f, 450.0f } },  // 1 秒：正中央出一隻
+        { 120.0f,  {-150.0f, 450.0f } },  // 2 秒：左邊出一隻
+        { 150.0f,  { 150.0f, 450.0f } },  // 2.5 秒：右邊出一隻
+
+        // 4 秒時：左右「同時」各出一隻 (時間設一樣即可)
+        { 240.0f,  {-250.0f, 450.0f } },
+        { 240.0f,  { 250.0f, 450.0f } },
+
+        // 6 秒時：排成 V 字型的三隻敵機陣型
+        { 360.0f,  {-150.0f, 450.0f } },
+        { 370.0f,  {   0.0f, 450.0f } },
+        { 380.0f,  { 150.0f, 450.0f } },
+
+        // ... 你可以無限往下編排整個關卡 ...
+    };
+
     m_CurrentState = State::UPDATE;
 }
 
@@ -239,19 +266,24 @@ void App::Update() {
     }
 
     // --- 1. 生成敵機邏輯 ---
-    // 每一幀減少計時器
-    m_EnemySpawnTimer -= 2.0f;
+    // ==========================================
+    // 關卡時間軸系統 (Level Timeline)
+    // ==========================================
+    m_LevelTimer += 1.0f; // 每一幀時間 +1
 
-    if (m_EnemySpawnTimer <= 0.0f) {
-        // 隨機產生 X 座標 (範圍抓 -300 到 300)
-        float randomX = (std::rand() % 600) - 300.0f;
+    // 使用 while 迴圈檢查：如果當前時間大於等於清單上要求的時間，就生成敵人
+    // (用 while 是因為同一幀可能會「同時」生成好幾隻敵人，例如上面的 240.0f)
+    while (m_CurrentEventIndex < m_LevelEvents.size() &&
+           m_LevelTimer >= m_LevelEvents[m_CurrentEventIndex].spawnTime) {
 
-        // 直接產生突擊型敵人，不再需要傳入 Type
-        // 預設血量在建構子裡已經是 5 了，所以只要傳入位置即可
-        m_Enemies.push_back(std::make_shared<Enemy>(glm::vec2(randomX, 400.0f)));
+        // 取得當前事件設定的座標
+        glm::vec2 spawnPos = m_LevelEvents[m_CurrentEventIndex].position;
 
-        // 重置計時器
-        m_EnemySpawnTimer = 100.0f + (std::rand() % 40);
+        // 產生敵機 (血量目前預設為 5)
+        m_Enemies.push_back(std::make_shared<Enemy>(spawnPos, 5));
+
+        // 推進到下一個事件
+        m_CurrentEventIndex++;
     }
 
 
