@@ -51,7 +51,7 @@ public:
         glm::vec2 halfSize = m_Drawable->GetSize() * m_Transform.scale / 2.0f;
 
         // 3. 設定邊界（根據你的視窗大小調整，這裡假設視窗寬 720, 高 600）
-        float limitX = 305.0f - halfSize.x;
+        float limitX = 300.0f - halfSize.x;
         float limitY = 360.0f - halfSize.y;
 
         // 4. 使用 std::clamp 限制座標

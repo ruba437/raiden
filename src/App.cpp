@@ -34,7 +34,7 @@ void App::Start() {
 }
 
 void App::Update() {
-    float bgSpeed = 2.0f;
+    float bgSpeed = 0.5f;
 
     // 更新並繪製背景
     m_Bg1->Update(bgSpeed);
@@ -242,49 +242,35 @@ void App::Update() {
     // 每一幀減少計時器
     m_EnemySpawnTimer -= 2.0f;
 
-    // 當計時器歸零或小於零時，生成一隻新敵機
     if (m_EnemySpawnTimer <= 0.0f) {
-        // 隨機產生 X 座標 (假設視窗寬度是 720，範圍抓 -300 到 300)
-        float randomX = (rand() % 600) - 300.0f;
+        // 隨機產生 X 座標 (範圍抓 -300 到 300)
+        float randomX = (std::rand() % 600) - 300.0f;
 
-        // 從畫面上方 (例如 y = 400) 生成敵機
-        auto newEnemy = std::make_shared<Enemy>(glm::vec2(randomX, 400.0f));
-        m_Enemies.push_back(newEnemy);
+        // 直接產生突擊型敵人，不再需要傳入 Type
+        // 預設血量在建構子裡已經是 5 了，所以只要傳入位置即可
+        m_Enemies.push_back(std::make_shared<Enemy>(glm::vec2(randomX, 400.0f)));
 
-        // 重置計時器 (假設 60 幀約 1 秒，這裡設定約 1 秒生一隻)
-        m_EnemySpawnTimer = 120.0f;
+        // 重置計時器
+        m_EnemySpawnTimer = 100.0f + (std::rand() % 40);
     }
 
-    // --- 2. 更新與繪製敵機 ---
-    for (auto it = m_Enemies.begin(); it != m_Enemies.end(); ) {
-        auto& enemy = *it;
-        enemy->Update();
-        enemy->Draw();
 
-        // 如果敵機飛出畫面底部 (例如 y < -400)，則從記憶體中移除
-        if (enemy->GetPosition().y < -400.0f) {
-            it = m_Enemies.erase(it);
-        } else {
-            ++it;
-        }
-    }
 
     // --- 1. 先更新敵機與子彈的位置 (不要在這裡 Draw) ---
-    for (auto& enemy : m_Enemies) {
-        enemy->Update();
+    glm::vec2 playerPos = m_Player->GetPosition(); // 先取得玩家位置
 
-        // --- 新增：敵機發射子彈邏輯 ---
+    for (auto& enemy : m_Enemies) {
+        // --- 呼叫 Update 時，將 playerPos 傳進去 ---
+        enemy->Update(playerPos);
+
+        // 敵機發射子彈邏輯
         if (enemy->ReadyToShoot()) {
-            // 產生一顆向下飛的子彈 (Velocity Y 為負數，例如 -8.0f)
-            // 我們在這裡多傳入一個參數：敵機子彈的圖片路徑
             auto enemyBullet = std::make_shared<Bullet>(
                 enemy->GetPosition(),
                 glm::vec2(0.0f, -8.0f),
                 RESOURCE_DIR "/Image/bullet/enemy_attack_1.png"
             );
             m_EnemyBullets.push_back(enemyBullet);
-
-            // 重置該敵機的計時器
             enemy->ResetShootTimer();
         }
     }
@@ -304,34 +290,45 @@ void App::Update() {
             float distToEnemy = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
             if (distToEnemy < 30.0f) {
-                m_Score += 100;
-                m_ScoreUI->UpdateScore(m_Score);
 
-                // --- 修改：獨立的道具掉落機率 ---
-                int dropChance = std::rand() % 100; // 產生 0 到 99 的隨機數
+                // --- 1. 子彈對敵人造成傷害 (假設每顆子彈傷害為 1) ---
+                (*enemyIt)->TakeDamage(1);
+                bulletHit = true; // 子彈本身還是會消失 (貫穿雷射除外)
 
-                if (dropChance < 50) {
-                    // 0~9 (10% 機率)：掉落武器升級道具
-                    auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE);
-                    m_Items.push_back(newItem);
+                // --- 2. 檢查敵人是否死亡 ---
+                if ((*enemyIt)->IsDead()) {
+                    m_Score += 100;
+                    m_ScoreUI->UpdateScore(m_Score);
+
+                    // 掉落道具邏輯 (保留你原本的機率判斷)
+                    int dropChance = std::rand() % 100;
+                    if (dropChance < 50) {
+                        m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE));
+                    }
+                    if (dropChance < 30) {
+                        m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS));
+                    }
+
+                    // 敵人死亡，從畫面上移除
+                    enemyIt = m_Enemies.erase(enemyIt);
+                } else {
+                    // 如果敵人還沒死，就不 erase，指標繼續往下走
+                    ++enemyIt;
                 }
-                if (dropChance < 30) {
-                    // 10~29 (20% 機率)：掉落分數道具
-                    auto newItem = std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS);
-                    m_Items.push_back(newItem);
-                }
 
-                // 移除敵機與子彈的邏輯...
-                enemyIt = m_Enemies.erase(enemyIt);
-                bulletHit = true;
-                break;
+                break; // 跳出內層迴圈 (這顆子彈已經打中目標，不需要再檢查其他敵人)
             } else {
                 ++enemyIt;
             }
         }
 
-        // 檢查子彈是否擊中或飛出畫面，若是則移除
-        if (bulletHit || (*bulletIt)->GetPosition().y > 500.0f) {
+        glm::vec2 bPos = (*bulletIt)->GetPosition();
+
+        bool isOutOfBounds = (bPos.x < -305.0f || bPos.x > 305.0f ||
+                              bPos.y < -450.0f || bPos.y > 450.0f);
+
+        // 如果打中敵機，或者飛出邊界，就將這顆子彈移除
+        if (bulletHit || isOutOfBounds) {
             bulletIt = m_Bullets.erase(bulletIt);
         } else {
             ++bulletIt;
@@ -414,7 +411,7 @@ void App::Update() {
             m_Player->TakeDamage(1);
             LOG_INFO("💥 被敵機子彈擊中！剩餘血量: {}", m_Player->GetHP());
 
-            bulletIt = m_EnemyBullets.erase(bulletIt); // 移除這顆子彈
+            bulletIt = m_EnemyBullets.erase(bulletIt);
 
             if (m_Player->IsDead()) {
                 LOG_INFO("💀 玩家血量歸零，遊戲結束！");
@@ -422,12 +419,17 @@ void App::Update() {
                 break;
             }
         }
-        else if ((*bulletIt)->GetPosition().y < -400.0f) {
-            // 敵機子彈飛出畫面底部，移除
-            bulletIt = m_EnemyBullets.erase(bulletIt);
-        }
         else {
-            ++bulletIt;
+            // --- 敵機子彈的全方位邊界檢查 ---
+            glm::vec2 bPos = (*bulletIt)->GetPosition();
+            bool isOutOfBounds = (bPos.x < -305.0f || bPos.x > 305.0f ||
+                                  bPos.y < -450.0f || bPos.y > 450.0f);
+
+            if (isOutOfBounds) {
+                bulletIt = m_EnemyBullets.erase(bulletIt);
+            } else {
+                ++bulletIt;
+            }
         }
     }
 
