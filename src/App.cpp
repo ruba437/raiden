@@ -5,6 +5,7 @@
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
 #include <cstdlib>
+#include "AssaultEnemy.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -40,21 +41,9 @@ void App::Start() {
     // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
     // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
     m_LevelEvents = {
-        // { 觸發幀數, { X座標, Y座標 } }
-        { 60.0f,   {   0.0f, 450.0f } },  // 1 秒：正中央出一隻
-        { 120.0f,  {-150.0f, 450.0f } },  // 2 秒：左邊出一隻
-        { 150.0f,  { 150.0f, 450.0f } },  // 2.5 秒：右邊出一隻
-
-        // 4 秒時：左右「同時」各出一隻 (時間設一樣即可)
-        { 240.0f,  {-250.0f, 450.0f } },
-        { 240.0f,  { 250.0f, 450.0f } },
-
-        // 6 秒時：排成 V 字型的三隻敵機陣型
-        { 360.0f,  {-150.0f, 450.0f } },
-        { 370.0f,  {   0.0f, 450.0f } },
-        { 380.0f,  { 150.0f, 450.0f } },
-
-        // ... 你可以無限往下編排整個關卡 ...
+        // { 觸發幀數, { X座標, 初始Y座標 } }
+        { 180.0f,  {-150.0f, 450.0f } },  // 第 3 秒：在偏左方生成一隻
+        { 300.0f,  { 150.0f, 450.0f } }   // 第 5 秒：在偏右方生成一隻
     };
 
     m_CurrentState = State::UPDATE;
@@ -276,13 +265,11 @@ void App::Update() {
     while (m_CurrentEventIndex < m_LevelEvents.size() &&
            m_LevelTimer >= m_LevelEvents[m_CurrentEventIndex].spawnTime) {
 
-        // 取得當前事件設定的座標
         glm::vec2 spawnPos = m_LevelEvents[m_CurrentEventIndex].position;
 
-        // 產生敵機 (血量目前預設為 5)
-        m_Enemies.push_back(std::make_shared<Enemy>(spawnPos, 5));
+        // --- 修改這裡：產生 AssaultEnemy，但把它塞進 Enemy 的指標陣列中！ ---
+        m_Enemies.push_back(std::make_shared<AssaultEnemy>(spawnPos));
 
-        // 推進到下一個事件
         m_CurrentEventIndex++;
     }
 
@@ -389,8 +376,10 @@ void App::Update() {
             continue;
         }
 
-        // 移除飛出畫面底部的敵機
-        if ((*enemyIt)->GetPosition().y < -400.0f) {
+        glm::vec2 ePos = (*enemyIt)->GetPosition();
+
+        // 如果敵機飛出畫面底部 (-450) 或 飛出畫面上方 (+500)，就移除牠
+        if (ePos.y < -450.0f || ePos.y > 500.0f || ePos.x < -450.0f || ePos.x > 450.0f) {
             enemyIt = m_Enemies.erase(enemyIt);
         } else {
             ++enemyIt;

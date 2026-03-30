@@ -7,7 +7,7 @@
 class Background : public Util::GameObject {
 public:
     Background() {
-        m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/Background/background_2.png");
+        m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/Background/background_4.png");
         m_ZIndex = 0; // 確保背景在最底層
         m_Transform.scale = {0.4f, 0.3f};
     }
