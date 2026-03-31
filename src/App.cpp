@@ -42,10 +42,23 @@ void App::Start() {
     // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
     // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
     m_LevelEvents = {
-        // { 觸發幀數, { X座標, 初始Y座標 } }
-        { 180.0f,  {-150.0f, 450.0f } },  // 第 3 秒：在偏左方生成一隻
-        { 300.0f,  { 150.0f, 450.0f } },   // 第 5 秒：在偏右方生成一隻
-        { 420.0f,  {   0.0f, 450.0f } }
+        // 第 3 秒：左側突襲機
+        { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+
+        // 第 5 秒：右側突襲機
+        { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
+
+        // 第 7 秒：正中央散彈停留機
+        { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
+
+        // --- 你可以繼續自由編排！例如： ---
+        // 第 9 秒：左右同時出突襲機
+        { 540.0f, {-200.0f, 450.0f}, EnemyType::ASSAULT },
+        { 540.0f, { 200.0f, 450.0f}, EnemyType::ASSAULT },
+
+        // 第 12 秒：左右兩側各出一台散彈停留機
+        { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
+        { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD }
     };
 
     m_CurrentState = State::UPDATE;
@@ -267,18 +280,20 @@ void App::Update() {
     while (m_CurrentEventIndex < m_LevelEvents.size() &&
            m_LevelTimer >= m_LevelEvents[m_CurrentEventIndex].spawnTime) {
 
+        // 從清單中拿出座標與種類
         glm::vec2 spawnPos = m_LevelEvents[m_CurrentEventIndex].position;
+        EnemyType type = m_LevelEvents[m_CurrentEventIndex].type;
 
-        // --- 簡易判斷：如果生成在正中央 (X = 0)，就當作是重型的 SpreadEnemy ---
-        // (未來你的 LevelEvents 可以多加一個變數來明確指定 EnemyType)
-        if (spawnPos.x == 0.0f) {
-            m_Enemies.push_back(std::make_shared<SpreadEnemy>(spawnPos));
-        } else {
+        // --- 根據明確的 type 來生成對應的敵機類別 ---
+        if (type == EnemyType::ASSAULT) {
             m_Enemies.push_back(std::make_shared<AssaultEnemy>(spawnPos));
+        }
+        else if (type == EnemyType::SPREAD) {
+            m_Enemies.push_back(std::make_shared<SpreadEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
-           }
+    }
 
 
 

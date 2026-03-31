@@ -39,10 +39,16 @@ private:
 
     std::vector<std::shared_ptr<Enemy>> m_Enemies;
 
+    enum class EnemyType {
+        ASSAULT, // 突襲型 (U字折返)
+        SPREAD   // 散彈型 (停留上方射擊三叉戟)
+        // 未來有 SNIPER 或 BOSS 都可以直接加在這裡
+    };
+
     struct EnemySpawnData {
-        float spawnTime;    // 觸發時間 (以遊戲經過的幀數計算，例如 60 = 1秒)
-        glm::vec2 position; // 生成的初始座標
-        // (未來如果有不同種類的敵人，也可以把 Type 或 HP 寫進這裡！)
+        float spawnTime;    // 觸發時間
+        glm::vec2 position; // 生成座標
+        EnemyType type;     // 生成的敵人種類
     };
 
     // --- 2. 新增關卡相關變數 ---
