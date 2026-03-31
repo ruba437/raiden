@@ -307,15 +307,14 @@ void App::Update() {
         // 敵機發射子彈邏輯
         if (enemy->ReadyToShoot()) {
 
-            // --- 向敵機索取它這次要發射的所有子彈方向 ---
-            std::vector<glm::vec2> velocities = enemy->GetBulletVelocities();
+            // --- 修改這裡：把 playerPos 傳給敵機，讓它能計算瞄準角度 ---
+            std::vector<glm::vec2> velocities = enemy->GetBulletVelocities(playerPos);
 
-            // 針對每一個方向，生成一顆子彈
             for (const auto& vel : velocities) {
                 auto enemyBullet = std::make_shared<Bullet>(
                     enemy->GetPosition(),
-                    vel, // 傳入各自的速度向量
-                    RESOURCE_DIR "/Image/bullet/enemy_attack_1.png"
+                    vel,
+                    RESOURCE_DIR "/Image/bullet/red.png"
                 );
                 m_EnemyBullets.push_back(enemyBullet);
             }

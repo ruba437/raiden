@@ -2,48 +2,59 @@
 #define SPREAD_ENEMY_HPP
 
 #include "Enemy.hpp"
+#include <cmath> // --- 確保有引入 cmath ---
 
 class SpreadEnemy : public Enemy {
 private:
     bool m_IsStopped = false;
 
 public:
-    // 這種類型的敵人通常比較硬，我們給它 15 滴血
-    SpreadEnemy(const glm::vec2& startPosition) 
+    SpreadEnemy(const glm::vec2& startPosition)
         : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/spread.png", 15) {
-        
-        m_CanShoot = false; // 還沒就位前不開火
+        m_CanShoot = false;
     }
 
     void Update(const glm::vec2& playerPos) override {
-        
         if (!m_IsStopped) {
-            // 狀態 1：緩慢進場
             m_Transform.translation.y -= 3.0f;
-            
-            // 假設 200.0f 算是畫面上方，到達後停下
             if (m_Transform.translation.y <= 200.0f) {
                 m_IsStopped = true;
-                m_CanShoot = true; // 停好後允許開火
+                m_CanShoot = true;
             }
-        } else {
-            // 狀態 2：停留在原地
-            // 這裡不需要改變位置，它會一直停著當固定砲台
         }
-
         Enemy::Update(playerPos);
     }
 
-    // --- 覆寫子彈方向：回傳三發散開的子彈 ---
-    std::vector<glm::vec2> GetBulletVelocities() const override {
-        return {
-            glm::vec2(0.0f, -8.0f),   // 正中間往下
-            glm::vec2(-3.5f, -8.0f),  // 左斜角
-            glm::vec2(3.5f, -8.0f)    // 右斜角
-        };
+    // --- 修改：實作自機狙擊散彈數學運算 ---
+    std::vector<glm::vec2> GetBulletVelocities(const glm::vec2& playerPos) const override {
+
+        glm::vec2 currentPos = GetPosition();
+
+        // 1. 計算敵機到玩家的相對距離 (dx, dy)
+        float dx = playerPos.x - currentPos.x;
+        float dy = playerPos.y - currentPos.y;
+
+        // 2. 計算基礎瞄準角度 (弧度)
+        float baseAngle = std::atan2(dy, dx);
+
+        // 3. 設定子彈速度與散開的角度大小
+        float speed = 8.0f;
+        float spreadAngle = 0.25f; // 0.25 弧度大約是 14.3 度
+
+        // 4. 利用 cos 和 sin 將角度轉回 X 軸與 Y 軸的速度向量
+        // 中間子彈：精準瞄準玩家
+        glm::vec2 centerVel(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed);
+
+        // 左側子彈：基礎角度 - 散開角度
+        glm::vec2 leftVel(std::cos(baseAngle - spreadAngle) * speed, std::sin(baseAngle - spreadAngle) * speed);
+
+        // 右側子彈：基礎角度 + 散開角度
+        glm::vec2 rightVel(std::cos(baseAngle + spreadAngle) * speed, std::sin(baseAngle + spreadAngle) * speed);
+
+        // 回傳這三顆子彈的速度
+        return { centerVel, leftVel, rightVel };
     }
-    
-    // 稍微降低它的攻擊頻率，給玩家閃躲的空間
+
     void ResetShootTimer() override { 
         m_ShootTimer = 80.0f + (std::rand() % 40); 
     }
