@@ -46,6 +46,12 @@ public:
     virtual void TakeDamage(int damage) { m_HP -= damage; }
     virtual bool IsDead() const { return m_HP <= 0; }
     glm::vec2 GetPosition() const { return m_Transform.translation; }
+
+
+    // 預設行為：回傳一顆垂直往下的子彈
+    virtual std::vector<glm::vec2> GetBulletVelocities() const {
+        return { glm::vec2(0.0f, -8.0f) };
+    }
 };
 
 #endif

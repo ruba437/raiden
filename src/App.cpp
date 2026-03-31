@@ -6,6 +6,7 @@
 #include "Util/Logger.hpp"
 #include <cstdlib>
 #include "AssaultEnemy.hpp"
+#include "SpreadEnemy.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -43,7 +44,8 @@ void App::Start() {
     m_LevelEvents = {
         // { 觸發幀數, { X座標, 初始Y座標 } }
         { 180.0f,  {-150.0f, 450.0f } },  // 第 3 秒：在偏左方生成一隻
-        { 300.0f,  { 150.0f, 450.0f } }   // 第 5 秒：在偏右方生成一隻
+        { 300.0f,  { 150.0f, 450.0f } },   // 第 5 秒：在偏右方生成一隻
+        { 420.0f,  {   0.0f, 450.0f } }
     };
 
     m_CurrentState = State::UPDATE;
@@ -267,11 +269,16 @@ void App::Update() {
 
         glm::vec2 spawnPos = m_LevelEvents[m_CurrentEventIndex].position;
 
-        // --- 修改這裡：產生 AssaultEnemy，但把它塞進 Enemy 的指標陣列中！ ---
-        m_Enemies.push_back(std::make_shared<AssaultEnemy>(spawnPos));
+        // --- 簡易判斷：如果生成在正中央 (X = 0)，就當作是重型的 SpreadEnemy ---
+        // (未來你的 LevelEvents 可以多加一個變數來明確指定 EnemyType)
+        if (spawnPos.x == 0.0f) {
+            m_Enemies.push_back(std::make_shared<SpreadEnemy>(spawnPos));
+        } else {
+            m_Enemies.push_back(std::make_shared<AssaultEnemy>(spawnPos));
+        }
 
         m_CurrentEventIndex++;
-    }
+           }
 
 
 
@@ -284,12 +291,20 @@ void App::Update() {
 
         // 敵機發射子彈邏輯
         if (enemy->ReadyToShoot()) {
-            auto enemyBullet = std::make_shared<Bullet>(
-                enemy->GetPosition(),
-                glm::vec2(0.0f, -8.0f),
-                RESOURCE_DIR "/Image/bullet/enemy_attack_1.png"
-            );
-            m_EnemyBullets.push_back(enemyBullet);
+
+            // --- 向敵機索取它這次要發射的所有子彈方向 ---
+            std::vector<glm::vec2> velocities = enemy->GetBulletVelocities();
+
+            // 針對每一個方向，生成一顆子彈
+            for (const auto& vel : velocities) {
+                auto enemyBullet = std::make_shared<Bullet>(
+                    enemy->GetPosition(),
+                    vel, // 傳入各自的速度向量
+                    RESOURCE_DIR "/Image/bullet/enemy_attack_1.png"
+                );
+                m_EnemyBullets.push_back(enemyBullet);
+            }
+
             enemy->ResetShootTimer();
         }
     }

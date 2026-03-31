@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
         include/Item.hpp
         include/Score.hpp
         include/AssaultEnemy.hpp
+        include/SpreadEnemy.hpp
 )
 
 if(MSVC)
