@@ -2,57 +2,68 @@
 #define SPREAD_ENEMY_HPP
 
 #include "Enemy.hpp"
-#include <cmath> // --- 確保有引入 cmath ---
+#include <cmath>
 
 class SpreadEnemy : public Enemy {
 private:
     bool m_IsStopped = false;
+    bool m_IsRetreating = false; // 新增：是否正在撤退
+    float m_AttackTimer = 0.0f;  // 新增：攻擊持續時間計時器
 
 public:
     SpreadEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/spread.png", 15) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/spread.png", 10) {
         m_CanShoot = false;
     }
 
     void Update(const glm::vec2& playerPos) override {
-        if (!m_IsStopped) {
+
+        if (m_IsRetreating) {
+            // ==========================================
+            // 狀態 3：向上移動離開地圖
+            // ==========================================
+            m_Transform.translation.y += 4.0f; // 撤退速度
+
+        } else if (m_IsStopped) {
+            // ==========================================
+            // 狀態 2：停留在原地攻擊，並計時
+            // ==========================================
+            m_AttackTimer += 1.0f; // 每一幀增加計時
+
+            // 8 秒後開始撤退
+            if (m_AttackTimer >= 480.0f) {
+                m_IsRetreating = true;
+                m_CanShoot = false; // 撤退時停止攻擊 (如果你想邊跑邊射，可以設為 true)
+            }
+        } else {
+            // ==========================================
+            // 狀態 1：進場下降
+            // ==========================================
             m_Transform.translation.y -= 3.0f;
             if (m_Transform.translation.y <= 200.0f) {
                 m_IsStopped = true;
                 m_CanShoot = true;
             }
         }
+
         Enemy::Update(playerPos);
     }
 
-    // --- 修改：實作自機狙擊散彈數學運算 ---
+    // 攻擊邏輯保持不變：永遠朝向玩家的三叉戟散彈
     std::vector<glm::vec2> GetBulletVelocities(const glm::vec2& playerPos) const override {
-
         glm::vec2 currentPos = GetPosition();
-
-        // 1. 計算敵機到玩家的相對距離 (dx, dy)
         float dx = playerPos.x - currentPos.x;
         float dy = playerPos.y - currentPos.y;
-
-        // 2. 計算基礎瞄準角度 (弧度)
         float baseAngle = std::atan2(dy, dx);
 
-        // 3. 設定子彈速度與散開的角度大小
         float speed = 8.0f;
-        float spreadAngle = 0.25f; // 0.25 弧度大約是 14.3 度
+        float spreadAngle = 0.25f;
 
-        // 4. 利用 cos 和 sin 將角度轉回 X 軸與 Y 軸的速度向量
-        // 中間子彈：精準瞄準玩家
-        glm::vec2 centerVel(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed);
-
-        // 左側子彈：基礎角度 - 散開角度
-        glm::vec2 leftVel(std::cos(baseAngle - spreadAngle) * speed, std::sin(baseAngle - spreadAngle) * speed);
-
-        // 右側子彈：基礎角度 + 散開角度
-        glm::vec2 rightVel(std::cos(baseAngle + spreadAngle) * speed, std::sin(baseAngle + spreadAngle) * speed);
-
-        // 回傳這三顆子彈的速度
-        return { centerVel, leftVel, rightVel };
+        return {
+            glm::vec2(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed),
+            glm::vec2(std::cos(baseAngle - spreadAngle) * speed, std::sin(baseAngle - spreadAngle) * speed),
+            glm::vec2(std::cos(baseAngle + spreadAngle) * speed, std::sin(baseAngle + spreadAngle) * speed)
+        };
     }
 
     void ResetShootTimer() override { 
