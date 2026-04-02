@@ -50,7 +50,7 @@ public:
     }
 
     // 攻擊邏輯保持不變：永遠朝向玩家的三叉戟散彈
-    std::vector<glm::vec2> GetBulletVelocities(const glm::vec2& playerPos) const override {
+    std::vector<EnemyBulletData> GetBulletData(const glm::vec2& playerPos) const override {
         glm::vec2 currentPos = GetPosition();
         float dx = playerPos.x - currentPos.x;
         float dy = playerPos.y - currentPos.y;
@@ -59,10 +59,12 @@ public:
         float speed = 8.0f;
         float spreadAngle = 0.25f;
 
+        // 將原本的速度向量封裝進 EnemyBulletData 結構中
+        // 因為這種類型不需要位置偏移，所以 posOffset 都設為 (0, 0)
         return {
-            glm::vec2(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed),
-            glm::vec2(std::cos(baseAngle - spreadAngle) * speed, std::sin(baseAngle - spreadAngle) * speed),
-            glm::vec2(std::cos(baseAngle + spreadAngle) * speed, std::sin(baseAngle + spreadAngle) * speed)
+                { glm::vec2(0, 0), glm::vec2(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed) },
+                { glm::vec2(0, 0), glm::vec2(std::cos(baseAngle - spreadAngle) * speed, std::sin(baseAngle - spreadAngle) * speed) },
+                { glm::vec2(0, 0), glm::vec2(std::cos(baseAngle + spreadAngle) * speed, std::sin(baseAngle + spreadAngle) * speed) }
         };
     }
 

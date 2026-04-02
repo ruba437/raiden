@@ -37,7 +37,7 @@ public:
     }
 
     // 發射單發追蹤彈 (子彈依然會瞄準玩家)
-    std::vector<glm::vec2> GetBulletVelocities(const glm::vec2& playerPos) const override {
+    std::vector<EnemyBulletData> GetBulletData(const glm::vec2& playerPos) const override {
         glm::vec2 currentPos = GetPosition();
         float dx = playerPos.x - currentPos.x;
         float dy = playerPos.y - currentPos.y;
@@ -45,7 +45,10 @@ public:
 
         float speed = 6.0f;
 
-        return { glm::vec2(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed) };
+        // 回傳單發追蹤彈
+        return {
+                { glm::vec2(0, 0), glm::vec2(std::cos(baseAngle) * speed, std::sin(baseAngle) * speed) }
+        };
     }
 
     void ResetShootTimer() override { 

@@ -7,6 +7,11 @@
 #include <cstdlib>
 #include <string>
 
+struct EnemyBulletData {
+    glm::vec2 posOffset; // 相對於敵機中心的位置偏移
+    glm::vec2 velocity;  // 子彈的速度向量
+};
+
 class Enemy : public Util::GameObject {
 protected:
     // 將變數設為 protected，這樣繼承它的子類別才可以使用這些變數
@@ -48,9 +53,11 @@ public:
     glm::vec2 GetPosition() const { return m_Transform.translation; }
 
 
-    // 預設行為：回傳一顆垂直往下的子彈
-    virtual std::vector<glm::vec2> GetBulletVelocities(const glm::vec2& playerPos) const {
-        return { glm::vec2(0.0f, -8.0f) };
+
+
+    virtual std::vector<EnemyBulletData> GetBulletData(const glm::vec2& /*playerPos*/) const {
+        // 預設：從中心發射一顆往下的子彈
+        return { {glm::vec2(0, 0), glm::vec2(0, -8.0f)} };
     }
 };
 
