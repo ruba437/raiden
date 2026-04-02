@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "AssaultEnemy.hpp"
 #include "SpreadEnemy.hpp"
+#include "TankEnemy.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -42,23 +43,33 @@ void App::Start() {
     // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
     // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
     m_LevelEvents = {
-        // 第 3 秒：左側突襲機
-        { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+        // // 第 3 秒：左側突襲機
+        // { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+        //
+        // // 第 5 秒：右側突襲機
+        // { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
+        //
+        // // 第 7 秒：正中央散彈停留機
+        // { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
+        //
+        // // --- 你可以繼續自由編排！例如： ---
+        // // 第 9 秒：左右同時出突襲機
+        // { 540.0f, {-200.0f, 450.0f}, EnemyType::ASSAULT },
+        // { 540.0f, { 200.0f, 450.0f}, EnemyType::ASSAULT },
+        //
+        // // 第 12 秒：左右兩側各出一台散彈停留機
+        // { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
+        // { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD },
 
-        // 第 5 秒：右側突襲機
-        { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
+        // 第 10 秒：從左側邊緣駛入一輛坦克 (X = -440，Y = 200)
+        { 180.0f, {-200.0f, 450.0f}, EnemyType::TANK },
 
-        // 第 7 秒：正中央散彈停留機
-        { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
+        // 第 12 秒：從右側邊緣駛入一輛坦克 (X = 440，Y = 0)
+        { 240.0f, { 305.0f,   0.0f}, EnemyType::TANK },
 
-        // --- 你可以繼續自由編排！例如： ---
-        // 第 9 秒：左右同時出突襲機
-        { 540.0f, {-200.0f, 450.0f}, EnemyType::ASSAULT },
-        { 540.0f, { 200.0f, 450.0f}, EnemyType::ASSAULT },
-
-        // 第 12 秒：左右兩側各出一台散彈停留機
-        { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
-        { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD }
+        // 第 15 秒：左右同時駛入，形成交叉火力
+        { 300.0f, {-305.0f, 100.0f}, EnemyType::TANK },
+        { 300.0f, { 305.0f, 300.0f}, EnemyType::TANK },
     };
 
     m_CurrentState = State::UPDATE;
@@ -291,6 +302,9 @@ void App::Update() {
         else if (type == EnemyType::SPREAD) {
             m_Enemies.push_back(std::make_shared<SpreadEnemy>(spawnPos));
         }
+        else if (type == EnemyType::TANK) {
+            m_Enemies.push_back(std::make_shared<TankEnemy>(spawnPos));
+        }
 
         m_CurrentEventIndex++;
     }
@@ -408,7 +422,7 @@ void App::Update() {
         glm::vec2 ePos = (*enemyIt)->GetPosition();
 
         // 如果敵機飛出畫面底部 (-450) 或 飛出畫面上方 (+500)，就移除牠
-        if (ePos.y < -450.0f || ePos.y > 500.0f || ePos.x < -450.0f || ePos.x > 450.0f) {
+        if (ePos.y < -450.0f || ePos.y > 500.0f || ePos.x < -305.0f || ePos.x > 305.0f) {
             enemyIt = m_Enemies.erase(enemyIt);
         } else {
             ++enemyIt;

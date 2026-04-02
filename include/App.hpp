@@ -41,7 +41,8 @@ private:
 
     enum class EnemyType {
         ASSAULT, // 突襲型 (U字折返)
-        SPREAD   // 散彈型 (停留上方射擊三叉戟)
+        SPREAD,   // 散彈型 (停留上方射擊三叉戟)
+        TANK
         // 未來有 SNIPER 或 BOSS 都可以直接加在這裡
     };
 
