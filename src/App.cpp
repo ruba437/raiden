@@ -10,6 +10,7 @@
 #include "TankEnemy.hpp"
 #include "PhantomEnemy.hpp"
 #include "TurretEnemy.hpp"
+#include "BossEnemy.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -70,8 +71,9 @@ void App::Start() {
         //
         // { 180.0f, {-150.0f, 450.0f}, EnemyType::PHANTOM }
 
-        { 180.0f, {-200.0f, 450.0f}, EnemyType::TURRET },
-        { 180.0f, { 200.0f, 450.0f}, EnemyType::TURRET },
+        // { 180.0f, {-200.0f, 450.0f}, EnemyType::TURRET },
+        // { 180.0f, { 200.0f, 450.0f}, EnemyType::TURRET },
+        { 180.0f, { 0.0f, 500.0f }, EnemyType::BOSS }
     };
 
     m_CurrentState = State::UPDATE;
@@ -310,6 +312,9 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<PhantomEnemy>(spawnPos));
         }else if (type == EnemyType::TURRET) {
             m_Enemies.push_back(std::make_shared<TurretEnemy>(spawnPos));
+        }else if (type == EnemyType::BOSS) {
+            // --- 壓軸生成 Boss ---
+            m_Enemies.push_back(std::make_shared<BossEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
