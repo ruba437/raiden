@@ -100,8 +100,8 @@ public:
 
             for (int i = 0; i < 4; ++i) {
                 glm::vec2 currentVel = baseVel * (1.0f - i * 0.05f);
-                data.push_back({ sideDir * (-sideOffset), currentVel });
-                data.push_back({ sideDir * (sideOffset),  currentVel });
+                data.push_back({ sideDir * (-sideOffset), currentVel, RESOURCE_DIR "/Image/bullet/green.png" });
+                data.push_back({ sideDir * (sideOffset),  currentVel, RESOURCE_DIR "/Image/bullet/green.png" });
             }
 
             // ==========================================
@@ -125,7 +125,7 @@ public:
                 float speedMultiplier = 1.0f - (ratio * ratio * 0.5f);
                 float currentSpeed = (baseSpeed + 1) * speedMultiplier;
 
-                data.push_back({ glm::vec2(0, 0), glm::vec2(std::cos(currentAngle) * currentSpeed, std::sin(currentAngle) * currentSpeed) });
+                data.push_back({ glm::vec2(0, 0), glm::vec2(std::cos(currentAngle) * currentSpeed, std::sin(currentAngle) * currentSpeed), RESOURCE_DIR "/Image/bullet/yellow.png" });
             }
         }
         else if (m_State == State::MOVE_UP) {
@@ -151,7 +151,8 @@ public:
             for (int i = 0; i < 4; ++i) {
                 data.push_back({
                     glm::vec2(0, 0),
-                    glm::vec2(std::cos(angles[i]) * bulletSpeed, std::sin(angles[i]) * bulletSpeed)
+                    glm::vec2(std::cos(angles[i]) * bulletSpeed, std::sin(angles[i]) * bulletSpeed),
+                    RESOURCE_DIR "/Image/bullet/blue.png"
                 });
             }
         }

@@ -10,6 +10,9 @@
 struct EnemyBulletData {
     glm::vec2 posOffset; // 相對於敵機中心的位置偏移
     glm::vec2 velocity;  // 子彈的速度向量
+    std::string imagePath;
+    EnemyBulletData(glm::vec2 offset, glm::vec2 vel, std::string path = RESOURCE_DIR "/Image/bullet/yellow.png")
+        : posOffset(offset), velocity(vel), imagePath(path) {}
 };
 
 class Enemy : public Util::GameObject {
