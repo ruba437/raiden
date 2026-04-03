@@ -9,6 +9,7 @@
 #include "SpreadEnemy.hpp"
 #include "TankEnemy.hpp"
 #include "PhantomEnemy.hpp"
+#include "TurretEnemy.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -44,30 +45,33 @@ void App::Start() {
     // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
     // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
     m_LevelEvents = {
-         // 第 3 秒：左側突襲機
-         { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+        //  // 第 3 秒：左側突襲機
+        //  { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+        //
+        //  // 第 5 秒：右側突襲機
+        //  { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
+        //
+        //  // 第 7 秒：正中央散彈停留機
+        //  { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
+        //
+        //
+        //
+        //  // 第 12 秒：左右兩側各出一台散彈停留機
+        //  { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
+        //  { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD },
+        //
+        //  //第 10 秒：從左側邊緣駛入一輛坦克 (X = -440，Y = 200)
+        //  { 180.0f, {-200.0f, 450.0f}, EnemyType::TANK },
+        //
+        //  // 第 12 秒：從右側邊緣駛入一輛坦克 (X = 440，Y = 0)
+        //  { 240.0f, { 305.0f,   0.0f}, EnemyType::TANK },
+        //
+        //
+        //
+        // { 180.0f, {-150.0f, 450.0f}, EnemyType::PHANTOM }
 
-         // 第 5 秒：右側突襲機
-         { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
-
-         // 第 7 秒：正中央散彈停留機
-         { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
-
-
-
-         // 第 12 秒：左右兩側各出一台散彈停留機
-         { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
-         { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD },
-
-         //第 10 秒：從左側邊緣駛入一輛坦克 (X = -440，Y = 200)
-         { 180.0f, {-200.0f, 450.0f}, EnemyType::TANK },
-
-         // 第 12 秒：從右側邊緣駛入一輛坦克 (X = 440，Y = 0)
-         { 240.0f, { 305.0f,   0.0f}, EnemyType::TANK },
-
-
-
-        { 180.0f, {-150.0f, 450.0f}, EnemyType::PHANTOM }
+        { 180.0f, {-200.0f, 450.0f}, EnemyType::TURRET },
+        { 180.0f, { 200.0f, 450.0f}, EnemyType::TURRET },
     };
 
     m_CurrentState = State::UPDATE;
@@ -304,6 +308,8 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<TankEnemy>(spawnPos));
         }else if (type == EnemyType::PHANTOM) {
             m_Enemies.push_back(std::make_shared<PhantomEnemy>(spawnPos));
+        }else if (type == EnemyType::TURRET) {
+            m_Enemies.push_back(std::make_shared<TurretEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;

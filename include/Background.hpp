@@ -22,7 +22,7 @@ public:
 
     void Update(float speed) {
         // 背景向下移動
-        m_Transform.translation.y -= speed;
+        m_Transform.translation.y -= 1;
 
         // 如果背景完全移出畫面底部（假設畫面高度為 600，中心為 0，底部是 -300）
         // 這裡的數值需根據你的背景圖片高度調整
