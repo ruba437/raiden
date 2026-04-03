@@ -39,9 +39,9 @@ public:
             m_CanShoot = false;
 
             // 當移動到畫面中間偏上 (例如 Y = 150) 時，切換狀態
-            if (m_Transform.translation.y <= 150.0f) {
+            if (m_Transform.translation.y <= 250.0f) {
                 m_State = State::PHASE1_SHOOT;
-                m_StateTimer = 120.0f; // 預計停在中間 3 秒鐘 (60 * 3)
+                m_StateTimer = 240.0f; // 預計停在中間 3 秒鐘 (60 * 3)
                 m_CanShoot = true;
                 m_ShootTimer = 0.0f;   // 立刻開火
             }
@@ -84,48 +84,87 @@ public:
         std::vector<EnemyBulletData> data;
 
         if (m_State == State::PHASE1_SHOOT) {
-            // ----------------------------------------
-            // 攻擊 1：面向玩家的兩排長串子彈
-            // ----------------------------------------
             float dx = playerPos.x - GetPosition().x;
             float dy = playerPos.y - GetPosition().y;
-            float angle = std::atan2(dy, dx);
-            
-            glm::vec2 baseVel(std::cos(angle) * 7.0f, std::sin(angle) * 7.0f);
-            glm::vec2 sideDir(-std::sin(angle), std::cos(angle));
-            
-            // Boss 體型通常較大，我們把兩排子彈的間距拉寬到 35.0f
-            float sideOffset = 35.0f; 
+            float aimAngle = std::atan2(dy, dx);
 
-            // 一次射出 4 發形成較長的彈鍊
+            // --- 統一的基礎速度，讓所有子彈感覺是「一體」的 ---
+            float baseSpeed = 4.0f;
+
+            // ==========================================
+            // 攻擊 1-A：面向玩家的兩排狙擊彈
+            // ==========================================
+            glm::vec2 baseVel(std::cos(aimAngle) * baseSpeed, std::sin(aimAngle) * baseSpeed);
+            glm::vec2 sideDir(-std::sin(aimAngle), std::cos(aimAngle));
+            float sideOffset = 35.0f;
+
             for (int i = 0; i < 4; ++i) {
                 glm::vec2 currentVel = baseVel * (1.0f - i * 0.05f);
                 data.push_back({ sideDir * (-sideOffset), currentVel });
                 data.push_back({ sideDir * (sideOffset),  currentVel });
             }
-        } 
-        else if (m_State == State::MOVE_UP) {
-            // ----------------------------------------
-            // 攻擊 2：四向彈幕 (X型對角線發射)
-            // ----------------------------------------
-            float bulletSpeed = 5.0f;
-            
-            // 分別朝向：左下、右下、左上、右上
-            data.push_back({ glm::vec2(0, 0), glm::vec2(-bulletSpeed, -bulletSpeed) });
-            data.push_back({ glm::vec2(0, 0), glm::vec2( bulletSpeed, -bulletSpeed) });
-            data.push_back({ glm::vec2(0, 0), glm::vec2(-bulletSpeed,  bulletSpeed) });
-            data.push_back({ glm::vec2(0, 0), glm::vec2( bulletSpeed,  bulletSpeed) });
+
+            // ==========================================
+            // 攻擊 1-B：朝向玩家集中的密集 U 字扇形
+            // ==========================================
+            float halfSpread = 0.7f;
+            int fanCount = 11;
+            float angleStep = (halfSpread * 2.0f) / (fanCount - 1);
+
+            int centerIndex = fanCount / 2;
+
+            for (int i = 0; i < fanCount; ++i) {
+                float currentAngle = (aimAngle - halfSpread) + (i * angleStep);
+
+                // 1. 計算距離中心的比例 (0.0 代表在正中央，1.0 代表在最外側)
+                float ratio = std::abs(i - centerIndex) / (float)centerIndex;
+
+                // 2. 決定速度倍率 (改成用減的，讓外側減速)
+                // 中央的子彈速度倍率為 1.0 (維持 baseSpeed 7.0f，與兩排狙擊彈完美同步)
+                // 最外側的子彈速度倍率為 1.0 - 0.4 = 0.6 (速度降到 4.2f)
+                float speedMultiplier = 1.0f - (ratio * ratio * 0.5f);
+                float currentSpeed = (baseSpeed + 1) * speedMultiplier;
+
+                data.push_back({ glm::vec2(0, 0), glm::vec2(std::cos(currentAngle) * currentSpeed, std::sin(currentAngle) * currentSpeed) });
+            }
         }
-        
+        else if (m_State == State::MOVE_UP) {
+            // ==========================================
+            // 攻擊 2：偏向下方的四向彈幕 (撤退掩護火力)
+            // ==========================================
+            float bulletSpeed = 5.0f;
+
+            // 設定正下方為基準角度 (-90度，即 -1.570796f 弧度)
+            // 因為畫面 Y 軸往下是負的，所以 sin(-90度) = -1，剛好往下飛
+            float downAngle = -1.570796f;
+
+            // 設定四個子彈的角度偏移量 (例如偏 25 度與偏 55 度)
+            // 你可以透過修改這些數字來決定子彈張開的幅度
+            float angles[4] = {
+                downAngle - 0.45f, // 左側靠中
+                downAngle + 0.45f, // 右側靠中
+                downAngle - 0.95f, // 左側偏外
+                downAngle + 0.95f  // 右側偏外
+            };
+
+            // 利用迴圈發射這 4 顆子彈
+            for (int i = 0; i < 4; ++i) {
+                data.push_back({
+                    glm::vec2(0, 0),
+                    glm::vec2(std::cos(angles[i]) * bulletSpeed, std::sin(angles[i]) * bulletSpeed)
+                });
+            }
+        }
+
         return data;
     }
     
     void ResetShootTimer() override { 
         // 根據不同狀態給予不同的攻擊節奏
         if (m_State == State::PHASE1_SHOOT) {
-            m_ShootTimer = 60.0f; // 中間狙擊：大約 1 秒一波
+            m_ShootTimer = 120.0f; // 中間狙擊：大約 1 秒一波
         } else if (m_State == State::MOVE_UP) {
-            m_ShootTimer = 15.0f; // 向上移動：瘋狂連射 (每 0.25 秒發射一次四向彈)
+            m_ShootTimer = 60.0f; // 向上移動：瘋狂連射 (每 0.25 秒發射一次四向彈)
         }
     }
 };

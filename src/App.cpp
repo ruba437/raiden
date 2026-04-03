@@ -338,7 +338,7 @@ void App::Update() {
                 auto enemyBullet = std::make_shared<Bullet>(
                     enemy->GetPosition() + data.posOffset, // 套用位置偏移！
                     data.velocity,
-                    RESOURCE_DIR "/Image/bullet/red.png"
+                    RESOURCE_DIR "/Image/bullet/yellow.png"
                 );
                 m_EnemyBullets.push_back(enemyBullet);
             }
