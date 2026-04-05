@@ -47,6 +47,7 @@ add_executable(${PROJECT_NAME}
         include/PhantomEnemy.hpp
         include/TurretEnemy.hpp
         include/BossEnemy.hpp
+        include/Deck.hpp
 )
 
 if(MSVC)

@@ -15,7 +15,7 @@
 void App::Start() {
     LOG_TRACE("Start");
     m_Player = std::make_shared<Player>();
-    m_CurrentState = State::UPDATE;
+
 
 
     m_Bg1 = std::make_shared<Background>();
@@ -27,6 +27,13 @@ void App::Start() {
     m_Bg2->SetPosition({0, h}); // 精準放在第一張上方，不要多 1 像素也不要少
 
     m_Player = std::make_shared<Player>();
+
+    m_Deck = std::make_shared<Deck>();
+    m_Deck->SetPosition({0.0f, -250.0f});   // 甲板起始位置 (畫面最下方外側)
+    m_Player->SetPosition({0.0f, -250.0f}); // 玩家起始位置
+
+    m_IntroTimer = 0.0f;
+    m_CurrentState = State::INTRO;
 
     // 直接在畫面中央偏上方生成一個測試用的武器升級道具
     // 假設 x = 0.0f, y = 200.0f
@@ -76,8 +83,10 @@ void App::Start() {
         { 180.0f, { 0.0f, 500.0f }, EnemyType::BOSS }
     };
 
-    m_CurrentState = State::UPDATE;
+
 }
+
+
 
 void App::Update() {
     float bgSpeed = 0.5f;
@@ -524,4 +533,70 @@ void App::Update() {
 
 void App::End() { // NOLINT(this method will mutate members in the future)
     LOG_TRACE("End");
+}
+
+void App::UpdateIntro() {
+    float bgSpeed = 0.5f;
+    m_Bg1->Update(bgSpeed);
+    m_Bg2->Update(bgSpeed);
+
+    m_IntroTimer += 1.0f;
+
+    const float waitPhase1 = 60.0f;
+    const float dashPhase  = 60.0f;
+    const float waitPhase2 = 60.0f;
+    const float totalIntroTime = waitPhase1 + dashPhase + waitPhase2;
+
+    // === 位置微調參數 ===
+    float playerStartY = -275.0f;   // 衝刺起點 (原本是 -400)
+    float playerTargetY = -50.0f;   // 衝刺終點 (原本是 -200)
+    float deckOffsetY = 100.0f;      // 甲板相對於玩家的偏移量 (正數會讓甲板比玩家更高)
+    // ===================
+
+    glm::vec2 playerPos = {0.0f, playerStartY};
+    glm::vec2 deckPos = {0.0f, playerStartY + deckOffsetY};
+
+    if (m_IntroTimer <= waitPhase1) {
+        // [階段 1] 停留等待
+        playerPos.y = playerStartY;
+        deckPos.y = playerStartY + deckOffsetY;
+    }
+    else if (m_IntroTimer <= waitPhase1 + dashPhase) {
+        // [階段 2] 衝刺
+        float dashProgress = (m_IntroTimer - waitPhase1) / dashPhase;
+        float easeOut = 1.0f - std::pow(1.0f - dashProgress, 3);
+
+        playerPos.y = playerStartY + (playerTargetY - playerStartY) * easeOut;
+
+        if (dashProgress <= 0.2f) {
+            deckPos.y = playerPos.y + deckOffsetY; // 暫時黏著玩家
+        } else {
+            float dropProgress = (dashProgress - 0.2f) / 0.8f;
+            float easeIn = dropProgress * dropProgress;
+            float detachY = playerStartY + (playerTargetY - playerStartY) * (1.0f - std::pow(1.0f - 0.2f, 3));
+
+            // 甲板向下掉落至畫面外
+            deckPos.y = (detachY + deckOffsetY) + (-700.0f - detachY) * easeIn;
+        }
+    }
+    else {
+        // [階段 3] 衝刺完等待進入遊戲
+        playerPos.y = playerTargetY;
+        deckPos.y = -700.0f;
+    }
+
+    m_Player->SetPosition(playerPos);
+    if (m_Deck) {
+        m_Deck->SetPosition(deckPos);
+    }
+
+    m_Bg1->Draw();
+    m_Bg2->Draw();
+    if (m_Deck) m_Deck->Draw();
+    m_Player->Draw();
+
+    if (m_IntroTimer >= totalIntroTime) {
+        m_Deck = nullptr;
+        m_CurrentState = State::UPDATE;
+    }
 }

@@ -10,11 +10,13 @@
 #include "Score.hpp"
 #include <memory>
 #include <vector>
+#include "Deck.hpp"
 
 class App {
 public:
     enum class State {
         START,
+        INTRO,
         UPDATE,
         END,
     };
@@ -22,6 +24,8 @@ public:
     State GetCurrentState() const { return m_CurrentState; }
 
     void Start();
+
+    void UpdateIntro();
 
     void Update();
 
@@ -36,8 +40,10 @@ private:
     std::vector<std::shared_ptr<Bullet>> m_Bullets;
     std::shared_ptr<Background> m_Bg1;
     std::shared_ptr<Background> m_Bg2;
-
     std::vector<std::shared_ptr<Enemy>> m_Enemies;
+    std::shared_ptr<Deck> m_Deck;       // 甲板物件
+    float m_IntroTimer = 0.0f;          // 進場計時器
+    const float m_IntroDuration = 90.0f; // 進場動畫總幀數 (假設 60FPS，90幀=1.5秒)
 
     enum class EnemyType {
         ASSAULT, // 突襲型 (U字折返)
@@ -67,6 +73,7 @@ private:
     std::shared_ptr<ScoreUI> m_ScoreUI;
     float m_PlayerShootTimer = 0.0f;
     float m_MissileShootTimer = 0.0f;
+
 };
 
 #endif

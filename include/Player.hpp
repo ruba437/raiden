@@ -92,6 +92,10 @@ public:
 
     // 判斷是否死亡
     bool IsDead() const { return m_HP <= 0; }
+
+    void SetPosition(const glm::vec2& pos) {
+        m_Transform.translation = pos;
+    }
 };
 
 #endif
