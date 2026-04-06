@@ -15,7 +15,7 @@ private:
     std::shared_ptr<Util::Image> m_ImgLeft;
     std::shared_ptr<Util::Image> m_ImgRight;
     int m_WeaponLevel = 1;
-    int m_HP = 3;
+    int m_HP = 100;
     WeaponType m_WeaponType = WeaponType::DEFAULT; // 預設武器為散彈
     int m_MissileLevel = 0;
 

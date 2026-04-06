@@ -11,9 +11,13 @@
 #include "PhantomEnemy.hpp"
 #include "TurretEnemy.hpp"
 #include "BossEnemy.hpp"
+#include <ctime>
 
 void App::Start() {
     LOG_TRACE("Start");
+
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
     m_Player = std::make_shared<Player>();
 
 
@@ -53,8 +57,43 @@ void App::Start() {
     // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
     // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
     m_LevelEvents = {
-        //  // 第 3 秒：左側突襲機
-        //  { 180.0f, {-150.0f, 450.0f}, EnemyType::ASSAULT },
+        // 第 3 秒：左側突襲機
+        { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+        { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,  true },
+        { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+
+        { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
+        { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
+
+        { 480.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+        { 540.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+        { 600.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+
+        { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+
+        { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM,    true },
+        { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM,    true },
+
+        { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+        { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+
+        { 1200.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+        { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,  true },
+        { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+
+        { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
+        { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+
+        { 1140.0f, {150.0f, 500.0f}, EnemyType::TURRET,    false },
+        { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET,    false },
+        { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET,    false },
         //
         //  // 第 5 秒：右側突襲機
         //  { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
@@ -80,7 +119,7 @@ void App::Start() {
 
         // { 180.0f, {-200.0f, 450.0f}, EnemyType::TURRET },
         // { 180.0f, { 200.0f, 450.0f}, EnemyType::TURRET },
-        { 180.0f, { 0.0f, 500.0f }, EnemyType::BOSS }
+        // { 180.0f, { 0.0f, 500.0f }, EnemyType::BOSS }
     };
 
 
@@ -304,9 +343,17 @@ void App::Update() {
     while (m_CurrentEventIndex < m_LevelEvents.size() &&
            m_LevelTimer >= m_LevelEvents[m_CurrentEventIndex].spawnTime) {
 
-        // 從清單中拿出座標與種類
+        // 從清單中拿出座標、種類，以及我們新增的 randomX 開關
         glm::vec2 spawnPos = m_LevelEvents[m_CurrentEventIndex].position;
         EnemyType type = m_LevelEvents[m_CurrentEventIndex].type;
+        bool randomX = m_LevelEvents[m_CurrentEventIndex].randomX;
+
+        // ▼▼▼ 新增這段：如果設定為隨機 X，就重新計算 X 座標 ▼▼▼
+        if (randomX) {
+            float minX = -280.0f; // 畫面左邊界限制
+            float maxX = 280.0f;  // 畫面右邊界限制
+            spawnPos.x = minX + static_cast<float>(std::rand()) / (static_cast<float>(RAND_MAX / (maxX - minX)));
+        }
 
         // --- 根據明確的 type 來生成對應的敵機類別 ---
         if (type == EnemyType::ASSAULT) {
@@ -322,12 +369,11 @@ void App::Update() {
         }else if (type == EnemyType::TURRET) {
             m_Enemies.push_back(std::make_shared<TurretEnemy>(spawnPos));
         }else if (type == EnemyType::BOSS) {
-            // --- 壓軸生成 Boss ---
             m_Enemies.push_back(std::make_shared<BossEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
-    }
+           }
 
 
 

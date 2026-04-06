@@ -59,6 +59,7 @@ private:
         float spawnTime;    // 觸發時間
         glm::vec2 position; // 生成座標
         EnemyType type;     // 生成的敵人種類
+        bool randomX = false;
     };
 
     // --- 2. 新增關卡相關變數 ---
