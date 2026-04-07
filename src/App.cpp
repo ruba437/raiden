@@ -94,32 +94,19 @@ void App::Start() {
         { 1140.0f, {150.0f, 500.0f}, EnemyType::TURRET,    false },
         { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET,    false },
         { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET,    false },
-        //
-        //  // 第 5 秒：右側突襲機
-        //  { 300.0f, { 150.0f, 450.0f}, EnemyType::ASSAULT },
-        //
-        //  // 第 7 秒：正中央散彈停留機
-        //  { 420.0f, {   0.0f, 450.0f}, EnemyType::SPREAD },
-        //
-        //
-        //
-        //  // 第 12 秒：左右兩側各出一台散彈停留機
-        //  { 720.0f, {-150.0f, 450.0f}, EnemyType::SPREAD },
-        //  { 720.0f, { 150.0f, 450.0f}, EnemyType::SPREAD },
-        //
-        //  //第 10 秒：從左側邊緣駛入一輛坦克 (X = -440，Y = 200)
-        //  { 180.0f, {-200.0f, 450.0f}, EnemyType::TANK },
-        //
-        //  // 第 12 秒：從右側邊緣駛入一輛坦克 (X = 440，Y = 0)
-        //  { 240.0f, { 305.0f,   0.0f}, EnemyType::TANK },
-        //
-        //
-        //
-        // { 180.0f, {-150.0f, 450.0f}, EnemyType::PHANTOM }
 
-        // { 180.0f, {-200.0f, 450.0f}, EnemyType::TURRET },
-        // { 180.0f, { 200.0f, 450.0f}, EnemyType::TURRET },
-        // { 180.0f, { 0.0f, 500.0f }, EnemyType::BOSS }
+        { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
+        { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
+
+        { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+        { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
+
+        { 2100.0f, { 0.0f, 500.0f }, EnemyType::BOSS, false }
     };
 
 
