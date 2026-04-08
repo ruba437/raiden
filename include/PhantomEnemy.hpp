@@ -15,7 +15,7 @@ private:
 
 public:
     PhantomEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/phantom.png", 12) {}
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/phantom.png", 10) {}
 
     void Update(const glm::vec2& playerPos) override {
         if (m_Phase == Phase::TOP_TO_BOTTOM) {

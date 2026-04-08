@@ -8,7 +8,7 @@ class TurretEnemy : public Enemy {
 public:
     // 砲塔通常比較堅固，給它稍微多一點血量 (例如 8)
     TurretEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/turret.png", 8) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/turret.png", 5) {
 
         m_CanShoot = true; // 出生就可以準備開火
     }

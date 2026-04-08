@@ -10,7 +10,7 @@ private:
 
 public:
     TankEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/tank.png", 5) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/tank.png", 3) {
 
         m_CanShoot = true;
 

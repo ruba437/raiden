@@ -12,7 +12,7 @@ private:
 
 public:
     SpreadEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/spread.png", 10) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/spread.png", 5) {
         m_CanShoot = false;
     }
 

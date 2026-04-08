@@ -13,7 +13,7 @@ private:
 
 public:
     AssaultEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/assault.png", 5) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/assault.png", 3) {
         m_CanShoot = false;
     }
 

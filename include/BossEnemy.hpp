@@ -19,7 +19,7 @@ private:
 public:
     // Boss 擁有超高血量，例如 150 滴血！
     BossEnemy(const glm::vec2& startPosition) 
-        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/boss_1.png", 150) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/enemy/boss_1.png", 100) {
         
         m_CanShoot = false; // 進場時先不開火
         // 💡 如果你有更大張的 Boss 圖片，可以把路徑換成 "/Image/boss.png"
