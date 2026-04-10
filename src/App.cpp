@@ -617,8 +617,8 @@ void App::Update() {
     for (auto& bullet : m_EnemyBullets) bullet->Draw();
     m_Player->Draw();
     if (m_ScoreUI) m_ScoreUI->Draw();
-    if (m_HpUI) m_HpUI->Draw();
-    if (m_BombUI) m_BombUI->Draw();
+    if (m_HpUI) m_HpUI->DrawUI();
+    if (m_BombUI) m_BombUI->DrawUI();
 
     /* 原有的退出邏輯 */
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
