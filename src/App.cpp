@@ -169,11 +169,14 @@ void App::Update() {
 
                         //掉落道具
                         int dropChance = std::rand() % 100;
-                        if (dropChance < 40) {
+                        if (dropChance < 30) {
                             m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE));
                         }
-                        if (dropChance < 20) {
+                        else if (dropChance < 60) {
                             m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS));
+                        }
+                        else if (dropChance < 75) {
+                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::BOMB));
                         }
 
                         // 將死亡的敵人從陣列中移除，並取得下一個元素的迭代器
