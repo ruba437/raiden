@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include "Deck.hpp"
+#include "BombEffect.hpp"
 
 class App {
 public:
@@ -44,6 +45,7 @@ private:
     std::shared_ptr<Deck> m_Deck;       // 甲板物件
     float m_IntroTimer = 0.0f;          // 進場計時器
     const float m_IntroDuration = 90.0f; // 進場動畫總幀數 (假設 60FPS，90幀=1.5秒)
+    std::vector<std::shared_ptr<BombEffect>> m_Effects;
 
     enum class EnemyType {
         ASSAULT, // 突襲型 (U字折返)

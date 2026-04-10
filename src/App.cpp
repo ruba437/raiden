@@ -152,6 +152,7 @@ void App::Update() {
 
             // 檢查是否還有炸彈
             if (m_Player->UseBomb()) {
+                m_Effects.push_back(std::make_shared<BombEffect>(m_Player->GetPosition()));
                 if (m_BombUI) m_BombUI->UpdateBomb(m_Player->GetBombCount());
 
                 // 改用 Iterator 來走訪，這樣才能在敵人死亡時安全地將其移除
@@ -605,6 +606,20 @@ void App::Update() {
             } else {
                 ++bulletIt;
             }
+        }
+    }
+
+    // 更新爆炸特效
+    for (auto effectIt = m_Effects.begin(); effectIt != m_Effects.end(); ) {
+        (*effectIt)->Update();
+
+        // 如果動畫播完了，就把特效從陣列中移除
+        if ((*effectIt)->IsDone()) {
+            effectIt = m_Effects.erase(effectIt);
+        } else {
+            // 沒播完就畫出來
+            (*effectIt)->Draw();
+            ++effectIt;
         }
     }
 
