@@ -26,4 +26,40 @@ public:
     }
 };
 
+class HpUI : public Util::GameObject {
+public:
+    HpUI() {
+        m_ZIndex = 100; // 在最上層
+        m_Transform.translation = {-200.0f, -250.0f}; // 放在畫面左下角
+        UpdateHP(100);
+    }
+
+    void UpdateHP(int hp) {
+        m_Drawable = std::make_shared<Util::Text>(
+            RESOURCE_DIR "/font/Arial.ttf",
+            30,
+            "HP: " + std::to_string(hp),
+            Util::Color{100, 255, 100, 255}
+        );
+    }
+};
+
+class BombUI : public Util::GameObject {
+public:
+    BombUI() {
+        m_ZIndex = 100;
+        m_Transform.translation = {-200.0f, -300.0f};
+        UpdateBomb(3);
+    }
+
+    void UpdateBomb(int bomb) {
+        m_Drawable = std::make_shared<Util::Text>(
+            RESOURCE_DIR "/font/Arial.ttf",
+            30,
+            "Bomb: " + std::to_string(bomb),
+            Util::Color{100, 255, 100, 255} // 綠色字體
+        );
+    }
+};
+
 #endif

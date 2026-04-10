@@ -47,6 +47,12 @@ void App::Start() {
     m_Score = 0; // 遊戲開始分數歸零
     m_ScoreUI = std::make_shared<ScoreUI>();
 
+    m_HpUI = std::make_shared<HpUI>();
+    m_HpUI->UpdateHP(m_Player->GetHP());
+
+    m_BombUI = std::make_shared<BombUI>();
+    m_BombUI->UpdateBomb(m_Player->GetBombCount());
+
 
     // ==========================================
     // 關卡設計 (Level Design) 初始化
@@ -146,6 +152,7 @@ void App::Update() {
 
             // 檢查是否還有炸彈
             if (m_Player->UseBomb()) {
+                if (m_BombUI) m_BombUI->UpdateBomb(m_Player->GetBombCount());
 
                 // 改用 Iterator 來走訪，這樣才能在敵人死亡時安全地將其移除
                 for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
@@ -506,7 +513,7 @@ void App::Update() {
 
         if (distToPlayer < 35.0f) { // 玩家撞到敵機
             m_Player->TakeDamage(1);
-            LOG_INFO("health: {}", m_Player->GetHP());
+            if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
 
             enemyIt = m_Enemies.erase(enemyIt); // 敵機撞毀
 
@@ -555,6 +562,7 @@ void App::Update() {
             }
             else if ((*itemIt)->GetType() == Item::Type::BOMB) {
                 m_Player->AddBomb();
+                if (m_BombUI) m_BombUI->UpdateBomb(m_Player->GetBombCount());
             }
             itemIt = m_Items.erase(itemIt);
         }
@@ -576,12 +584,12 @@ void App::Update() {
         // 子彈的判定半徑通常比較小 (例如 20.0f)，這樣玩家比較好閃躲
         if (distToPlayer < 20.0f) {
             m_Player->TakeDamage(1);
-            LOG_INFO("💥 被敵機子彈擊中！剩餘血量: {}", m_Player->GetHP());
+            if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
 
             bulletIt = m_EnemyBullets.erase(bulletIt);
 
             if (m_Player->IsDead()) {
-                LOG_INFO("💀 玩家血量歸零，遊戲結束！");
+                LOG_INFO("game over");
                 m_CurrentState = State::END;
                 break;
             }
@@ -608,7 +616,9 @@ void App::Update() {
     for (auto& bullet : m_Bullets) bullet->Draw();
     for (auto& bullet : m_EnemyBullets) bullet->Draw();
     m_Player->Draw();
-    m_ScoreUI->Draw();
+    if (m_ScoreUI) m_ScoreUI->Draw();
+    if (m_HpUI) m_HpUI->Draw();
+    if (m_BombUI) m_BombUI->Draw();
 
     /* 原有的退出邏輯 */
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
