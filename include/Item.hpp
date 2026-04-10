@@ -8,7 +8,7 @@
 
 class Item : public Util::GameObject {
 public:
-    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, WEAPON_MISSILE, SCORE_BONUS };
+    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, WEAPON_MISSILE, SCORE_BONUS, BOMB };
 
     Item(const glm::vec2& startPosition, Type type) : m_Type(type) {
         UpdateImage(); // 初始化時設定圖片
@@ -39,8 +39,8 @@ public:
 
         // --- 3. 武器道具的邊界反彈邏輯 ---
         // 假設你的視窗範圍大約如下，如果道具撞到邊緣就會卡住並反向
-        const float minX = -280.0f;
-        const float maxX =  280.0f;
+        const float minX = -290.0f;
+        const float maxX =  290.0f;
         const float minY = -350.0f;
         const float maxY =  350.0f;
 
@@ -60,6 +60,10 @@ public:
         } else if (m_Transform.translation.y >= maxY) {
             m_Transform.translation.y = maxY;
             m_Velocity.y *= -1.0f;
+        }
+
+        if (m_Type == Type::BOMB) {
+            return;
         }
 
         // --- 4. 變換計時器邏輯 (只針對武器道具) ---
@@ -98,8 +102,10 @@ private:
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/laser_upgrade.png");
         }else if (m_Type == Type::WEAPON_MISSILE) {
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/missile_upgrade.png");
-        } else {
+        }else if (m_Type == Type::SCORE_BONUS){
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/gold_medal.png");
+        }else if (m_Type == Type::BOMB) {
+            m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/bomb.png");
         }
     }
 };

@@ -18,6 +18,7 @@ private:
     int m_HP = 100;
     WeaponType m_WeaponType = WeaponType::DEFAULT; // 預設武器為散彈
     int m_MissileLevel = 0;
+    int m_BombCount = 3;
 
 public:
     Player() {
@@ -95,6 +96,22 @@ public:
 
     void SetPosition(const glm::vec2& pos) {
         m_Transform.translation = pos;
+    }
+
+    int GetBombCount() const { return m_BombCount; }
+
+    // 消耗炸彈，回傳是否成功使用
+    bool UseBomb() {
+        if (m_BombCount > 0) {
+            m_BombCount--;
+            return true;
+        }
+        return false;
+    }
+
+    // 吃到道具時增加炸彈
+    void AddBomb() {
+        m_BombCount++;
     }
 };
 

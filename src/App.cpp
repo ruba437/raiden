@@ -41,7 +41,7 @@ void App::Start() {
 
     // 直接在畫面中央偏上方生成一個測試用的武器升級道具
     // 假設 x = 0.0f, y = 200.0f
-    auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::WEAPON_UPGRADE);
+    auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::BOMB);
     m_Items.push_back(testItem);
 
     m_Score = 0; // 遊戲開始分數歸零
@@ -140,6 +140,51 @@ void App::Update() {
         dx = 1.0f;
     }
 
+    if (Util::Input::IsKeyPressed(Util::Keycode::B)) {
+        // 檢查冷卻是否結束
+        if (m_BombCooldownTimer <= 0.0f) {
+
+            // 檢查是否還有炸彈
+            if (m_Player->UseBomb()) {
+
+                // 改用 Iterator 來走訪，這樣才能在敵人死亡時安全地將其移除
+                for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
+
+                    (*enemyIt)->TakeDamage(10); // 造成 10 點傷害
+
+                    // 檢查該敵人是否被炸死
+                    if ((*enemyIt)->IsDead()) {
+
+                        // --- 這裡可以加上你原本擊殺敵人的獎勵 ---
+                        m_Score += 100;
+                        if (m_ScoreUI) m_ScoreUI->UpdateScore(m_Score);
+
+                        //掉落道具
+                        int dropChance = std::rand() % 100;
+                        if (dropChance < 40) {
+                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE));
+                        }
+                        if (dropChance < 20) {
+                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS));
+                        }
+
+                        // 將死亡的敵人從陣列中移除，並取得下一個元素的迭代器
+                        enemyIt = m_Enemies.erase(enemyIt);
+                    } else {
+                        // 沒死的話，就繼續處理下一個敵人
+                        ++enemyIt;
+                    }
+                }
+
+                LOG_INFO("bomb: {}", m_Player->GetBombCount());
+                m_BombCooldownTimer = 60.0f;
+            } else {
+                LOG_INFO("no bomb left");
+                m_BombCooldownTimer = 30.0f;
+            }
+        }
+    }
+
     // 1. 更新動畫狀態 (傳入 dx)
     m_Player->SetDirection(dx);
 
@@ -154,6 +199,10 @@ void App::Update() {
 
     if (m_MissileShootTimer > 0.0f) {
         m_MissileShootTimer -= 1.0f;
+    }
+
+    if (m_BombCooldownTimer > 0.0f) {
+        m_BombCooldownTimer -= 1.0f;
     }
 
     // --- 2. 偵測攻擊輸入 ---
@@ -337,8 +386,8 @@ void App::Update() {
 
         // ▼▼▼ 新增這段：如果設定為隨機 X，就重新計算 X 座標 ▼▼▼
         if (randomX) {
-            float minX = -280.0f; // 畫面左邊界限制
-            float maxX = 280.0f;  // 畫面右邊界限制
+            float minX = -250.0f; // 畫面左邊界限制
+            float maxX = 250.0f;  // 畫面右邊界限制
             spawnPos.x = minX + static_cast<float>(std::rand()) / (static_cast<float>(RAND_MAX / (maxX - minX)));
         }
 
@@ -457,13 +506,13 @@ void App::Update() {
 
         if (distToPlayer < 35.0f) { // 玩家撞到敵機
             m_Player->TakeDamage(1);
-            LOG_INFO("💥 撞擊敵機！玩家扣血，剩餘血量: {}", m_Player->GetHP());
+            LOG_INFO("health: {}", m_Player->GetHP());
 
             enemyIt = m_Enemies.erase(enemyIt); // 敵機撞毀
 
             // 檢查玩家是否死亡
             if (m_Player->IsDead()) {
-                LOG_INFO("💀 玩家血量歸零，遊戲結束！");
+                LOG_INFO("game over");
                 m_CurrentState = State::END;
                 break;
             }
@@ -489,20 +538,23 @@ void App::Update() {
         if (distToPlayer < 40.0f) {
             if ((*itemIt)->GetType() == Item::Type::WEAPON_UPGRADE) {
                 m_Player->ChangeWeapon(Player::WeaponType::DEFAULT);
-                LOG_INFO("主武器：切換為散彈！");
+                LOG_INFO("mainWeapon: spread");
             }
             else if ((*itemIt)->GetType() == Item::Type::WEAPON_LASER) {
                 m_Player->ChangeWeapon(Player::WeaponType::LASER);
-                LOG_INFO("主武器：切換為雷射！");
+                LOG_INFO("mainWeapon: laser");
             }
             else if ((*itemIt)->GetType() == Item::Type::WEAPON_MISSILE) {
                 // --- 修改這裡：獨立升級副武器，不影響主武器 ---
                 m_Player->UpgradeMissile();
-                LOG_INFO("副武器：飛彈升級！目前等級: {}", m_Player->GetMissileLevel());
+                LOG_INFO("subWeaponLevel:", m_Player->GetMissileLevel());
             }
             else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS) {
                 m_Score += 1000;
                 m_ScoreUI->UpdateScore(m_Score);
+            }
+            else if ((*itemIt)->GetType() == Item::Type::BOMB) {
+                m_Player->AddBomb();
             }
             itemIt = m_Items.erase(itemIt);
         }
