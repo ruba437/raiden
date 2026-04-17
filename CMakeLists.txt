@@ -49,6 +49,7 @@ add_executable(${PROJECT_NAME}
         include/BossEnemy.hpp
         include/Deck.hpp
         include/BombEffect.hpp
+        include/MenuBackground.hpp
 )
 
 if(MSVC)

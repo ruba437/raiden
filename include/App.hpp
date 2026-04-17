@@ -12,11 +12,13 @@
 #include <vector>
 #include "Deck.hpp"
 #include "BombEffect.hpp"
+#include "MenuBackground.hpp"
 
 class App {
 public:
     enum class State {
         START,
+        MENU,
         INTRO,
         UPDATE,
         END,
@@ -25,12 +27,10 @@ public:
     State GetCurrentState() const { return m_CurrentState; }
 
     void Start();
-
+    void UpdateMenu();
     void UpdateIntro();
-
     void Update();
-
-    void End(); // NOLINT(readability-convert-member-functions-to-static)
+    void End();
 
 private:
     void ValidTask();
@@ -79,6 +79,7 @@ private:
     float m_PlayerShootTimer = 0.0f;
     float m_MissileShootTimer = 0.0f;
     float m_BombCooldownTimer = 0.0f;
+    std::shared_ptr<MenuBackground> m_MenuBg;
 };
 
 #endif

@@ -37,7 +37,9 @@ void App::Start() {
     m_Player->SetPosition({0.0f, -250.0f}); // 玩家起始位置
 
     m_IntroTimer = 0.0f;
-    m_CurrentState = State::INTRO;
+
+    m_MenuBg = std::make_shared<MenuBackground>();
+    m_CurrentState = State::MENU;
 
     // 直接在畫面中央偏上方生成一個測試用的武器升級道具
     // 假設 x = 0.0f, y = 200.0f
@@ -646,6 +648,22 @@ void App::Update() {
 
 void App::End() { // NOLINT(this method will mutate members in the future)
     LOG_TRACE("End");
+}
+
+void App::UpdateMenu() {
+    // 1. 畫出主畫面的專屬背景
+    if (m_MenuBg) {
+        m_MenuBg->Draw();
+    }
+
+    // 2. 偵測 Enter 鍵 (在 SDL/PTSD 引擎中通常叫 RETURN)
+    if (Util::Input::IsKeyPressed(Util::Keycode::RETURN)) {
+        // 進入遊戲後，這張主畫面背景就不需要了，釋放它的記憶體
+        m_MenuBg = nullptr;
+
+        // 切換到進場狀態
+        m_CurrentState = State::INTRO;
+    }
 }
 
 void App::UpdateIntro() {
