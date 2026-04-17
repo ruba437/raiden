@@ -50,6 +50,8 @@ add_executable(${PROJECT_NAME}
         include/Deck.hpp
         include/BombEffect.hpp
         include/MenuBackground.hpp
+        include/EndBackground.hpp
+        include/EndFrame.hpp
 )
 
 if(MSVC)

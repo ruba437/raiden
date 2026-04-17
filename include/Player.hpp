@@ -19,6 +19,7 @@ private:
     WeaponType m_WeaponType = WeaponType::DEFAULT; // 預設武器為散彈
     int m_MissileLevel = 0;
     int m_BombCount = 3;
+    float m_InvincibleTimer = 0.0f;
 
 public:
     Player() {
@@ -87,7 +88,9 @@ public:
 
     // 受到傷害
     void TakeDamage(int damage) {
+        if (m_InvincibleTimer > 0.0f) return;
         m_HP -= damage;
+        m_InvincibleTimer = 60.0f;
         if (m_HP < 0) m_HP = 0; // 避免血量變成負數
     }
 
@@ -112,6 +115,24 @@ public:
     // 吃到道具時增加炸彈
     void AddBomb() {
         m_BombCount++;
+    }
+
+    void Update() {
+        // 1. 遞減無敵時間
+        if (m_InvincibleTimer > 0.0f) {
+            m_InvincibleTimer -= 1.0f;
+        }
+
+        // 無敵時閃爍！
+        if (m_InvincibleTimer > 0.0f) {
+            if (static_cast<int>(m_InvincibleTimer) % 10 < 5) {
+                m_Visible = false;
+            } else {
+                m_Visible = true;
+            }
+        } else {
+            m_Visible = true; // 無敵結束，確保飛機是顯示的
+        }
     }
 };
 

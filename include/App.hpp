@@ -13,6 +13,7 @@
 #include "Deck.hpp"
 #include "BombEffect.hpp"
 #include "MenuBackground.hpp"
+#include "EndFrame.hpp"
 
 class App {
 public:
@@ -21,6 +22,7 @@ public:
         MENU,
         INTRO,
         UPDATE,
+        LEVELEND,
         END,
     };
 
@@ -30,6 +32,7 @@ public:
     void UpdateMenu();
     void UpdateIntro();
     void Update();
+    void UpdateEnd();
     void End();
 
 private:
@@ -80,6 +83,8 @@ private:
     float m_MissileShootTimer = 0.0f;
     float m_BombCooldownTimer = 0.0f;
     std::shared_ptr<MenuBackground> m_MenuBg;
+    int m_CurrentLevel = 1;
+    std::shared_ptr<EndFrame> m_EndFrame;
 };
 
 #endif

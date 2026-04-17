@@ -69,8 +69,8 @@ void App::Start() {
         { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
         { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,  true },
         { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-
-        { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
+        //
+         { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
         { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
 
         { 480.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
@@ -128,6 +128,7 @@ void App::Update() {
     // 更新並繪製背景
     m_Bg1->Update(bgSpeed);
     m_Bg2->Update(bgSpeed);
+    m_Player->Update();
     m_Bg1->Draw();
     m_Bg2->Draw();
 
@@ -521,7 +522,7 @@ void App::Update() {
             m_Player->TakeDamage(1);
             if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
 
-            enemyIt = m_Enemies.erase(enemyIt); // 敵機撞毀
+            //(*enemyIt)->TakeDamage(1);
 
             // 檢查玩家是否死亡
             if (m_Player->IsDead()) {
@@ -529,7 +530,7 @@ void App::Update() {
                 m_CurrentState = State::END;
                 break;
             }
-            continue;
+            break;
         }
 
         glm::vec2 ePos = (*enemyIt)->GetPosition();
@@ -626,6 +627,20 @@ void App::Update() {
             (*effectIt)->Draw();
             ++effectIt;
         }
+    }
+
+    for (auto it = m_Enemies.begin(); it != m_Enemies.end(); ) {
+        if ((*it)->IsDead()) {
+            it = m_Enemies.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // 通關判定
+    if (m_CurrentEventIndex >= m_LevelEvents.size() && m_Enemies.empty()) {
+        m_EndFrame = std::make_shared<EndFrame>();
+        m_CurrentState = State::LEVELEND;
     }
 
     // --- 5. 統一在這裡繪製所有物件 (確保層級正確) ---
@@ -729,5 +744,56 @@ void App::UpdateIntro() {
     if (m_IntroTimer >= totalIntroTime) {
         m_Deck = nullptr;
         m_CurrentState = State::UPDATE;
+    }
+}
+
+void App::UpdateEnd() {
+    // 1. 讓星空背景繼續滾動，維持遊戲動態感 (很帥！)
+    float bgSpeed = 0.5f;
+    m_Bg1->Update(bgSpeed);
+    m_Bg2->Update(bgSpeed);
+
+    // 2. 畫出底層的遊戲物件 (當作裱框的背景)
+    m_Bg1->Draw();
+    m_Bg2->Draw();
+    m_Player->Draw();
+
+    // 如果你有跟隨玩家的小兵或寵物，這裡也可以呼叫它們的 Draw()
+
+    // 3. 畫出結算的裱框
+    if (m_EndFrame) {
+        m_EndFrame->Draw();
+    }
+
+    // 💡 提示：如果你的 UI 系統 (m_ScoreUI) 可以改變位置
+    // 你可以在進入 END 狀態時，把分數文字移到畫面中央 (0.0f, 0.0f) 顯示！
+    // m_ScoreUI->Draw();
+
+    // 4. 偵測 Enter 鍵進入下一關
+    if (Util::Input::IsKeyPressed(Util::Keycode::RETURN)) {
+        // m_CurrentLevel++;
+        // LOG_INFO("按下 Enter，進入第 {} 關！", m_CurrentLevel);
+        //
+        m_EndFrame = nullptr; // 釋放裱框記憶體
+        m_CurrentState = State::END;
+        //
+        // // --- 設定下一關的時間軸 (維持你原本寫的邏輯) ---
+        // if (m_CurrentLevel == 2) {
+        //     // ... (你第二關的敵人配置) ...
+        // }
+        //
+        // // --- 重置遊戲參數 ---
+        // m_LevelTimer = 0.0f;
+        // m_CurrentEventIndex = 0;
+        // m_EnemySpawnTimer = 0.0f;
+        //
+        // // 重置玩家進場
+        // m_Deck = std::make_shared<Deck>();
+        // float startY = -250.0f;
+        // m_Deck->SetPosition({0.0f, startY});
+        // m_Player->SetPosition({0.0f, startY});
+        //
+        // m_IntroTimer = 0.0f;
+        // m_CurrentState = State::INTRO;
     }
 }
