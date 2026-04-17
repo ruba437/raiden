@@ -41,8 +41,8 @@ void App::Start() {
 
     // 直接在畫面中央偏上方生成一個測試用的武器升級道具
     // 假設 x = 0.0f, y = 200.0f
-    auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::BOMB);
-    m_Items.push_back(testItem);
+    //auto testItem = std::make_shared<Item>(glm::vec2(0.0f, 200.0f), Item::Type::BOMB);
+    //m_Items.push_back(testItem);
 
     m_Score = 0; // 遊戲開始分數歸零
     m_ScoreUI = std::make_shared<ScoreUI>();
