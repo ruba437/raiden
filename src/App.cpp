@@ -55,69 +55,11 @@ void App::Start() {
     m_BombUI = std::make_shared<BombUI>();
     m_BombUI->UpdateBomb(m_Player->GetBombCount());
 
-
     // ==========================================
-    // 關卡設計 (Level Design) 初始化
+    // 初始化第一關
     // ==========================================
-    m_LevelTimer = 0.0f;
-    m_CurrentEventIndex = 0;
-
-    // 假設遊戲執行速度為 60 FPS (1 秒 = 60.0f 幀)
-    // 注意：請務必按照 spawnTime 「由小到大」的順序來排，時間才會正確觸發！
-    m_LevelEvents = {
-        // 第 3 秒：左側突襲機
-        { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-        { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,  true },
-        { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        //
-         { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
-        { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
-
-        { 480.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-        { 540.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-        { 600.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-
-        { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-
-        { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM,    true },
-        { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM,    true },
-
-        { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-        { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-
-        { 1200.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-        { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,  true },
-        { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-
-        { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
-        { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-
-        { 1140.0f, {150.0f, 500.0f}, EnemyType::TURRET,    false },
-        { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET,    false },
-        { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET,    false },
-
-        { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT,    true },
-        { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD,    true },
-
-        { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-        { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK,    true },
-
-        { 2100.0f, { 0.0f, 500.0f }, EnemyType::BOSS, false }
-    };
-
-
+    m_CurrentLevel = 1;
+    LoadLevel(1);
 }
 
 
@@ -769,31 +711,288 @@ void App::UpdateEnd() {
     // 你可以在進入 END 狀態時，把分數文字移到畫面中央 (0.0f, 0.0f) 顯示！
     // m_ScoreUI->Draw();
 
-    // 4. 偵測 Enter 鍵進入下一關
+    // 4. 偵測 Enter 鍵進入下一關或結束遊戲
     if (Util::Input::IsKeyPressed(Util::Keycode::RETURN)) {
-        // m_CurrentLevel++;
-        // LOG_INFO("按下 Enter，進入第 {} 關！", m_CurrentLevel);
-        //
         m_EndFrame = nullptr; // 釋放裱框記憶體
-        m_CurrentState = State::END;
-        //
-        // // --- 設定下一關的時間軸 (維持你原本寫的邏輯) ---
-        // if (m_CurrentLevel == 2) {
-        //     // ... (你第二關的敵人配置) ...
-        // }
-        //
-        // // --- 重置遊戲參數 ---
-        // m_LevelTimer = 0.0f;
-        // m_CurrentEventIndex = 0;
-        // m_EnemySpawnTimer = 0.0f;
-        //
-        // // 重置玩家進場
-        // m_Deck = std::make_shared<Deck>();
-        // float startY = -250.0f;
-        // m_Deck->SetPosition({0.0f, startY});
-        // m_Player->SetPosition({0.0f, startY});
-        //
-        // m_IntroTimer = 0.0f;
-        // m_CurrentState = State::INTRO;
+
+        // 檢查是否還有下一關
+        if (m_CurrentLevel < 3) {
+            // ========================================
+            // 進入下一關
+            // ========================================
+            m_CurrentLevel++;
+            LOG_INFO("進入第 {} 關", m_CurrentLevel);
+
+            // 清空所有動態實體（記憶體會自動釋放）
+            m_Enemies.clear();
+            m_Bullets.clear();
+            m_EnemyBullets.clear();
+            m_Items.clear();
+            m_Effects.clear();
+
+            // 加載下一關
+            LoadLevel(m_CurrentLevel);
+
+            // 重設玩家位置
+            m_Player->SetPosition({0.0f, -250.0f});
+
+            // 重設武器冷卻計時器
+            m_PlayerShootTimer = 0.0f;
+            m_MissileShootTimer = 0.0f;
+            m_BombCooldownTimer = 0.0f;
+
+            // 進入進場動畫狀態
+            m_CurrentState = State::INTRO;
+        } else {
+            // ========================================
+            // 全部關卡已完成，進入結束狀態
+            // ========================================
+            LOG_INFO("遊戲完成！");
+            m_CurrentState = State::END;
+        }
+    }
+}
+
+// ==========================================
+// LoadLevel(int levelNum) - 關卡加載函式
+// ==========================================
+// 根據關卡號碼設定敵機生成時間軸
+// 玩家的生命值、火力等級、炸彈數量都會保留
+void App::LoadLevel(int levelNum) {
+    // 重置關卡計時器與事件索引
+    m_LevelTimer = 0.0f;
+    m_CurrentEventIndex = 0;
+    m_LevelEvents.clear();
+
+    if (levelNum == 1) {
+        // ==========================================
+        // 第一關：基礎敵機組合
+        // ==========================================
+        // 難度：簡單，主要是突襲型和散彈型
+        m_LevelEvents = {
+            // 開場：3隻突襲機
+            { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 散彈型來襲
+            { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 坦克型登場
+            { 480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 540.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 600.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 中場：突襲機混戰
+            { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 幽靈型
+            { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+
+            // 坦克混戰
+            { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 後期：突襲機返場
+            { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 混合波次
+            { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 砲台型
+            { 1440.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 最後衝刺
+            { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 最後的坦克
+            { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 第一關BOSS
+            { 2100.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+        };
+    }
+    else if (levelNum == 2) {
+        // ==========================================
+        // 第二關：難度提升，各類型敵機混合
+        // ==========================================
+        // 難度：中等，敵機更密集，砲台增多
+        m_LevelEvents = {
+            // 開場：連續突襲
+            { 60.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 90.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 150.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 坦克波次
+            { 250.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 300.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 350.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 散彈型密集
+            { 400.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 450.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 500.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 砲台陣列
+            { 600.0f, {-150.0f, 500.0f}, EnemyType::TURRET, false },
+            { 630.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            { 660.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 幽靈型組隊
+            { 750.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 800.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 850.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+
+            // 中場：全敵混戰
+            { 950.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 970.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 990.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1010.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1030.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+
+            // 密集突襲
+            { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1220.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1240.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1280.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1300.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1320.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 坦克堡壘
+            { 1450.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1510.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 散彈密集
+            { 1600.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1630.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 砲台防線
+            { 1750.0f, {-120.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1780.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1810.0f, {120.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 最後衝刺混合
+            { 1900.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1920.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1940.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1960.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1980.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 第二關BOSS
+            { 2400.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+        };
+    }
+    else if (levelNum == 3) {
+        // ==========================================
+        // 第三關：終極難度，敵機無限混亂
+        // ==========================================
+        // 難度：困難，高頻率敵機，砲台和幽靈優先
+        m_LevelEvents = {
+            // 開場地獄：超密集突襲
+            { 40.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 60.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 80.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 100.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 140.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 坦克重砲
+            { 200.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 240.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 280.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 320.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 散彈密集射擊
+            { 400.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 430.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 460.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 490.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 砲台要塞（3x3陣列）
+            { 600.0f, {-180.0f, 500.0f}, EnemyType::TURRET, false },
+            { 630.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            { 660.0f, {180.0f, 500.0f}, EnemyType::TURRET, false },
+            { 690.0f, {-180.0f, 500.0f}, EnemyType::TURRET, false },
+            { 720.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            { 750.0f, {180.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 幽靈軍團
+            { 850.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 880.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 910.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 940.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+
+            // 地獄混戰區間（800幀）
+            { 1100.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1120.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1140.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1160.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1200.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1220.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1240.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1280.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1320.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1340.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1360.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 密集坦克防線
+            { 1550.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1570.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1590.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1610.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1630.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 最後砲台陣列
+            { 1750.0f, {-180.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1770.0f, {-90.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1790.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1810.0f, {90.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1830.0f, {180.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 終極混戰
+            { 1950.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1970.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1990.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 2010.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 2030.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 2050.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 2070.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 2090.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 最終BOSS
+            { 2500.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+        };
+    }
+    else {
+        // 如果關卡號碼超過3，顯示警告並保持第3關配置
+        LOG_WARN("關卡號碼 {} 超過預設的最大關卡數 (3)", levelNum);
     }
 }
