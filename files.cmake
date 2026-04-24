@@ -10,6 +10,7 @@ set(INCLUDE_FILES
         Enemy.hpp
         Item.hpp
         Score.hpp
+        SpiralEnemy.hpp
 )
 
 set(TEST_FILES

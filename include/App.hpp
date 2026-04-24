@@ -57,8 +57,8 @@ private:
         TANK,
         PHANTOM,
         TURRET,
-        BOSS
-        // 未來有 SNIPER 或 BOSS 都可以直接加在這裡
+        BOSS,
+        SPIRAL   // 螺旋型 (盤旋一圈後朝玩家衝刺)
     };
 
     struct EnemySpawnData {
