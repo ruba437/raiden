@@ -20,6 +20,9 @@ private:
     int m_MissileLevel = 0;
     int m_BombCount = 3;
     float m_InvincibleTimer = 0.0f;
+    int m_PickedGoldMedals = 0;
+    int m_PickedSilverMedals = 0;
+    int m_PickedBombs = 0;
 
 public:
     Player() {
@@ -115,6 +118,23 @@ public:
     // 吃到道具時增加炸彈
     void AddBomb() {
         m_BombCount++;
+    }
+
+    // 統計方法：增加拾取計數
+    void AddPickedGoldMedal() { m_PickedGoldMedals++; }
+    void AddPickedSilverMedal() { m_PickedSilverMedals++; }
+    void AddPickedBomb() { m_PickedBombs++; }
+
+    // 統計方法：Getter
+    int GetPickedGoldMedals() const { return m_PickedGoldMedals; }
+    int GetPickedSilverMedals() const { return m_PickedSilverMedals; }
+    int GetPickedBombs() const { return m_PickedBombs; }
+
+    // 統計方法：重置
+    void ResetStats() {
+        m_PickedGoldMedals = 0;
+        m_PickedSilverMedals = 0;
+        m_PickedBombs = 0;
     }
 
     void Update() {

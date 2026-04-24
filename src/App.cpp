@@ -598,6 +598,12 @@ void App::Update() {
     // 通關判定
     if (m_CurrentEventIndex >= m_LevelEvents.size() && m_Enemies.empty()) {
         m_EndFrame = std::make_shared<EndFrame>();
+        m_EndFrame->SetStats(
+            m_Player->GetPickedBombs(),
+            m_Player->GetPickedGoldMedals(),
+            m_Player->GetPickedSilverMedals(),
+            m_Score
+        );
         m_CurrentState = State::LEVELEND;
     }
 
@@ -706,7 +712,7 @@ void App::UpdateIntro() {
 }
 
 void App::UpdateEnd() {
-    // 1. 讓星空背景繼續滾動，維持遊戲動態感 (很帥！)
+    // 1. 讓星空背景繼續滾動
     float bgSpeed = 0.5f;
     m_Bg1->Update(bgSpeed);
     m_Bg2->Update(bgSpeed);
@@ -720,7 +726,7 @@ void App::UpdateEnd() {
 
     // 3. 畫出結算的裱框
     if (m_EndFrame) {
-        m_EndFrame->Draw();
+        m_EndFrame->DrawUI();
     }
 
     // 💡 提示：如果你的 UI 系統 (m_ScoreUI) 可以改變位置
