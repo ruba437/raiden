@@ -8,7 +8,7 @@
 
 class Item : public Util::GameObject {
 public:
-    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, WEAPON_MISSILE, SCORE_BONUS, BOMB };
+    enum class Type { WEAPON_UPGRADE, WEAPON_LASER, WEAPON_MISSILE, SCORE_BONUS, SCORE_BONUS_SILVER, BOMB };
 
     Item(const glm::vec2& startPosition, Type type) : m_Type(type) {
         UpdateImage(); // 初始化時設定圖片
@@ -17,7 +17,7 @@ public:
         m_ZIndex = 7;
         m_Transform.scale = {0.5f, 0.5f}; // 保持你之前設定的縮放
 
-        if (m_Type == Type::SCORE_BONUS) {
+        if (m_Type == Type::SCORE_BONUS || m_Type == Type::SCORE_BONUS_SILVER) {
             // 分數道具：不隨機移動，只跟著地圖往下掉 (假設地圖滾動速度為 0.5f)
             m_Velocity = {0.0f, -1.0f};
         } else {
@@ -33,7 +33,7 @@ public:
         m_Transform.translation += m_Velocity;
 
         // --- 2. 如果是分數道具，只要往下掉就好，不處理反彈也不變換 ---
-        if (m_Type == Type::SCORE_BONUS) {
+        if (m_Type == Type::SCORE_BONUS || m_Type == Type::SCORE_BONUS_SILVER) {
             return;
         }
 
@@ -104,6 +104,8 @@ private:
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/missile_upgrade.png");
         }else if (m_Type == Type::SCORE_BONUS){
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/gold_medal.png");
+        }else if (m_Type == Type::SCORE_BONUS_SILVER) {
+            m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/silver_medal.png");
         }else if (m_Type == Type::BOMB) {
             m_Drawable = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/item/bomb.png");
         }

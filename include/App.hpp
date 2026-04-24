@@ -37,7 +37,7 @@ public:
 
 private:
     void ValidTask();
-    void LoadLevel(int levelNum);  // 根據關卡號碼加載敵機時間軸
+    void LoadLevel(int levelNum);
 
 private:
     State m_CurrentState = State::START;

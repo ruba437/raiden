@@ -12,6 +12,26 @@
 #include "TurretEnemy.hpp"
 #include "BossEnemy.hpp"
 #include <ctime>
+#include <optional>
+
+namespace {
+std::optional<Item::Type> RollEnemyDropType() {
+    const int dropChance = std::rand() % 100;
+    if (dropChance < 25) {
+        return Item::Type::WEAPON_UPGRADE;
+    }
+    if (dropChance < 40) {
+        return Item::Type::SCORE_BONUS;
+    }
+    if (dropChance < 55) {
+        return Item::Type::SCORE_BONUS_SILVER;
+    }
+    if (dropChance < 65) {
+        return Item::Type::BOMB;
+    }
+    return std::nullopt;
+}
+} // namespace
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -112,16 +132,10 @@ void App::Update() {
                         m_Score += 100;
                         if (m_ScoreUI) m_ScoreUI->UpdateScore(m_Score);
 
-                        //掉落道具
-                        int dropChance = std::rand() % 100;
-                        if (dropChance < 30) {
-                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE));
-                        }
-                        else if (dropChance < 60) {
-                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS));
-                        }
-                        else if (dropChance < 75) {
-                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::BOMB));
+                        // 掉落道具：所有擊殺都走同一套機率表
+                        const auto dropType = RollEnemyDropType();
+                        if (dropType.has_value()) {
+                            m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), *dropType));
                         }
 
                         // 將死亡的敵人從陣列中移除，並取得下一個元素的迭代器
@@ -418,13 +432,10 @@ void App::Update() {
                     m_Score += 100;
                     m_ScoreUI->UpdateScore(m_Score);
 
-                    // 掉落道具邏輯 (保留你原本的機率判斷)
-                    int dropChance = std::rand() % 100;
-                    if (dropChance < 50) {
-                        m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::WEAPON_UPGRADE));
-                    }
-                    if (dropChance < 30) {
-                        m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), Item::Type::SCORE_BONUS));
+                    // 掉落道具：和炸彈擊殺使用同一套機率表
+                    const auto dropType = RollEnemyDropType();
+                    if (dropType.has_value()) {
+                        m_Items.push_back(std::make_shared<Item>((*enemyIt)->GetPosition(), *dropType));
                     }
 
                     // 敵人死亡，從畫面上移除
@@ -508,6 +519,11 @@ void App::Update() {
             else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS) {
                 m_Score += 1000;
                 m_ScoreUI->UpdateScore(m_Score);
+            }
+            else if ((*itemIt)->GetType() == Item::Type::SCORE_BONUS_SILVER) {
+                m_Score += 500;
+                m_ScoreUI->UpdateScore(m_Score);
+                LOG_INFO("🥈 gain silver: {}", m_Score);
             }
             else if ((*itemIt)->GetType() == Item::Type::BOMB) {
                 m_Player->AddBomb();
@@ -993,6 +1009,6 @@ void App::LoadLevel(int levelNum) {
     }
     else {
         // 如果關卡號碼超過3，顯示警告並保持第3關配置
-        LOG_WARN("關卡號碼 {} 超過預設的最大關卡數 (3)", levelNum);
+        LOG_WARN("level: {} over (3)", levelNum);
     }
 }
