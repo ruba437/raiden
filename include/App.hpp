@@ -58,7 +58,9 @@ private:
         PHANTOM,
         TURRET,
         BOSS,
-        SPIRAL   // 螺旋型 (盤旋一圈後朝玩家衝刺)
+        SPIRAL,  // 螺旋型 (盤旋一圈後朝玩家衝刺)
+        STRAFER, // 橫移型 (停在上方左右掃射並向下齊射)
+        FORTRESS // 堡壘型 (節奏推進 + 雙模式輪替攻擊)
     };
 
     struct EnemySpawnData {

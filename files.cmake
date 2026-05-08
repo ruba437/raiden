@@ -11,6 +11,8 @@ set(INCLUDE_FILES
         Item.hpp
         Score.hpp
         SpiralEnemy.hpp
+        StraferEnemy.hpp
+        FortressEnemy.hpp
 )
 
 set(TEST_FILES

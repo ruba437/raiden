@@ -14,6 +14,8 @@
 #include <ctime>
 #include <optional>
 #include "SpiralEnemy.hpp"
+#include "StraferEnemy.hpp"
+#include "FortressEnemy.hpp"
 
 namespace {
 std::optional<Item::Type> RollEnemyDropType() {
@@ -379,6 +381,10 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<BossEnemy>(spawnPos));
         }else if (type == EnemyType::SPIRAL) {
             m_Enemies.push_back(std::make_shared<SpiralEnemy>(spawnPos));
+        }else if (type == EnemyType::STRAFER) {
+            m_Enemies.push_back(std::make_shared<StraferEnemy>(spawnPos));
+        }else if (type == EnemyType::FORTRESS) {
+            m_Enemies.push_back(std::make_shared<FortressEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
@@ -796,8 +802,8 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-            { 60.0f,  {240.0f, 300.0f}, EnemyType::SPIRAL, false },
-            { 120.0f,  {-240.0f, 300.0f}, EnemyType::SPIRAL, false },
+            { 60.0f,  {0.0f, 300.0f}, EnemyType::FORTRESS, false },
+
 
             // 開場：3隻突襲機
             // { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
