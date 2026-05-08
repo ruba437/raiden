@@ -49,6 +49,8 @@ add_executable(${PROJECT_NAME}
         include/BossEnemy.hpp
         include/StraferEnemy.hpp
         include/FortressEnemy.hpp
+        include/DashEnemy.hpp
+        include/Boss2Enemy.hpp
         include/Deck.hpp
         include/BombEffect.hpp
         include/MenuBackground.hpp

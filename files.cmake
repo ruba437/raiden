@@ -13,6 +13,8 @@ set(INCLUDE_FILES
         SpiralEnemy.hpp
         StraferEnemy.hpp
         FortressEnemy.hpp
+        DashEnemy.hpp
+        Boss2Enemy.hpp
 )
 
 set(TEST_FILES

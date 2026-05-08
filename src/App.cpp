@@ -16,6 +16,8 @@
 #include "SpiralEnemy.hpp"
 #include "StraferEnemy.hpp"
 #include "FortressEnemy.hpp"
+#include "DashEnemy.hpp"
+#include "Boss2Enemy.hpp"
 
 namespace {
 std::optional<Item::Type> RollEnemyDropType() {
@@ -385,6 +387,10 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<StraferEnemy>(spawnPos));
         }else if (type == EnemyType::FORTRESS) {
             m_Enemies.push_back(std::make_shared<FortressEnemy>(spawnPos));
+        }else if (type == EnemyType::DASH) {
+            m_Enemies.push_back(std::make_shared<DashEnemy>(spawnPos));
+        }else if (type == EnemyType::BOSS2) {
+            m_Enemies.push_back(std::make_shared<Boss2Enemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
@@ -395,9 +401,18 @@ void App::Update() {
     // --- 1. 先更新敵機與子彈的位置 (不要在這裡 Draw) ---
     glm::vec2 playerPos = m_Player->GetPosition(); // 先取得玩家位置
 
+    std::vector<std::shared_ptr<Enemy>> summonedEnemies;
     for (auto& enemy : m_Enemies) {
         // --- 呼叫 Update 時，將 playerPos 傳進去 ---
         enemy->Update(playerPos);
+
+        // Boss2 召喚小怪：先收集到暫存陣列，避免迭代中改動 m_Enemies
+        if (auto boss2 = std::dynamic_pointer_cast<Boss2Enemy>(enemy)) {
+            auto spawned = boss2->GetAndClearSpawnedEnemies();
+            if (!spawned.empty()) {
+                summonedEnemies.insert(summonedEnemies.end(), spawned.begin(), spawned.end());
+            }
+        }
 
         // 敵機發射子彈邏輯
         if (enemy->ReadyToShoot()) {
@@ -414,6 +429,9 @@ void App::Update() {
             }
             enemy->ResetShootTimer();
         }
+    }
+    if (!summonedEnemies.empty()) {
+        m_Enemies.insert(m_Enemies.end(), summonedEnemies.begin(), summonedEnemies.end());
     }
     for (auto& bullet : m_Bullets) bullet->Update();
     for (auto& bullet : m_EnemyBullets) bullet->Update(); // <-- 新增：更新敵機子彈位置
@@ -802,7 +820,7 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-            { 60.0f,  {0.0f, 300.0f}, EnemyType::FORTRESS, false },
+            { 60.0f,  {0.0f, 300.0f}, EnemyType::BOSS2, false },
 
 
             // 開場：3隻突襲機
