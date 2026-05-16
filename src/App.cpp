@@ -820,70 +820,70 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-            { 60.0f,  {0.0f, 300.0f}, EnemyType::BOSS2, false },
 
 
-            // 開場：3隻突襲機
-            // { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            //
-            // // 散彈型來襲
-            // { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            // { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            //
-            // // 坦克型登場
-            // { 480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            // { 540.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            // { 600.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            //
-            // // 中場：突襲機混戰
-            // { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            //
-            // // 幽靈型
-            // { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            // { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            //
-            // // 坦克混戰
-            // { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            // { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            //
-            // // 後期：突襲機返場
-            // { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            //
-            // // 混合波次
-            // { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            // { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            //
-            // // 砲台型
-            // { 1440.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
-            // { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET, false },
-            // { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
-            //
-            // // 最後衝刺
-            // { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            // { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            //
-            // // 最後的坦克
-            // { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            // { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            //
-            // // 第一關BOSS
-            // { 2100.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+
+            //開場：3隻突襲機
+            { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 散彈型來襲
+            { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 坦克型登場
+            { 480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 540.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 600.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 中場：突襲機混戰
+            { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 幽靈型
+            { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+
+            // 坦克混戰
+            { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 後期：突襲機返場
+            { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 混合波次
+            { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+
+            // 砲台型
+            { 1440.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+
+            // 最後衝刺
+            { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            // 最後的坦克
+            { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+
+            // 第一關BOSS
+            { 2100.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
         };
     }
     else if (levelNum == 2) {
@@ -892,71 +892,81 @@ void App::LoadLevel(int levelNum) {
         // ==========================================
         // 難度：中等，敵機更密集，砲台增多
         m_LevelEvents = {
-            // 開場：連續突襲
-            { 60.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 90.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 150.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
 
-            // 坦克波次
-            { 250.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 300.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 350.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 60.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
 
-            // 散彈型密集
+            { 120.0f, {240.0f, 300.0f}, EnemyType::SPIRAL, false },
+            { 150.0f, {240.0f, 280.0f}, EnemyType::SPIRAL, false },
+            { 180.0f, {240.0f, 260.0f}, EnemyType::SPIRAL, false },
+
+            { 210.0f, {-240.0f, 300.0f}, EnemyType::SPIRAL, false },
+            { 240.0f, {-240.0f, 280.0f}, EnemyType::SPIRAL, false },
+            { 270.0f, {-240.0f, 260.0f}, EnemyType::SPIRAL, false },
+
+
+            { 250.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 300.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 350.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+
             { 400.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 450.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 500.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
 
-            // 砲台陣列
-            { 600.0f, {-150.0f, 500.0f}, EnemyType::TURRET, false },
-            { 630.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
-            { 660.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
+            { 500.0f, {0.0f, 500.0f}, EnemyType::STRAFER, false },
 
-            // 幽靈型組隊
-            { 750.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            { 800.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            { 850.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 510.0f, {240.0f, 280.0f}, EnemyType::SPIRAL, false },
+            { 540.0f, {240.0f, 260.0f}, EnemyType::SPIRAL, false },
 
-            // 中場：全敵混戰
-            { 950.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 970.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 990.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 1010.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1030.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            { 600.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 630.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 660.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
 
-            // 密集突襲
-            { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1220.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1240.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1280.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1300.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1320.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 690.0f, {-240.0f, 270.0f}, EnemyType::SPIRAL, false },
+            { 720.0f, {-240.0f, 250.0f}, EnemyType::SPIRAL, false },
+            { 750.0f, {-240.0f, 230.0f}, EnemyType::SPIRAL, false },
 
-            // 坦克堡壘
-            { 1450.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 1480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 1510.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            { 780.0f, {75.0f, 500.0f,}, EnemyType::TURRET, false },
+            { 780.0f, {0.0f, 500.0f,}, EnemyType::TURRET, false },
 
-            // 散彈密集
-            { 1600.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 1630.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            { 900.0f, {100.0f, 500.0f,}, EnemyType::FORTRESS, false },
+            { 1600.0f, {-100.0f, 500.0f,}, EnemyType::FORTRESS, false },
 
-            // 砲台防線
-            { 1750.0f, {-120.0f, 500.0f}, EnemyType::TURRET, false },
-            { 1780.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
-            { 1810.0f, {120.0f, 500.0f}, EnemyType::TURRET, false },
+            { 1840.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 1870.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
+            { 1900.0f, {200.0f, 500.0f}, EnemyType::TANK, false },
 
-            // 最後衝刺混合
-            { 1900.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1920.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            { 1940.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1960.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 1980.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            { 1900.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            { 1930.0f, {-240.0f, 270.0f}, EnemyType::SPIRAL, false },
+            { 1960.0f, {-240.0f, 250.0f}, EnemyType::SPIRAL, false },
+            { 1990.0f, {-240.0f, 230.0f}, EnemyType::SPIRAL, false },
+            { 2020.0f, {-240.0f, 210.0f}, EnemyType::SPIRAL, false },
+
+            { 2050.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+
+            { 2050.0f, {-200.0f, 500.0f}, EnemyType::TANK, false },
+            { 2070.0f, {-200.0f, 500.0f}, EnemyType::TANK, false },
+            { 2100.0f, {-200.0f, 500.0f}, EnemyType::TANK, false },
+
+            { 2100.0f, {0.0f, 500.0f,}, EnemyType::TURRET, false },
+            { 2200.0f, {50.0f, 500.0f,}, EnemyType::TURRET, false },
+            { 2200.0f, {-50.0f, 500.0f,}, EnemyType::TURRET, false },
+
+            { 2500.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2505.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2510.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2515.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2520.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2525.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2530.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2535.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2540.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2545.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2550.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
+            { 2555.0f, {0.0f, 500.0f,}, EnemyType::DASH, true },
 
             // 第二關BOSS
-            { 2400.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+            { 2800.0f, {0.0f, 500.0f}, EnemyType::BOSS2, false },
+
+
         };
     }
     else if (levelNum == 3) {
