@@ -55,6 +55,7 @@ add_executable(${PROJECT_NAME}
         include/BombEffect.hpp
         include/MenuBackground.hpp
         include/EndFrame.hpp
+        include/BTurretEnemy.hpp
 )
 
 if(MSVC)

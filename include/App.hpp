@@ -62,7 +62,8 @@ private:
         STRAFER, // 橫移型 (停在上方左右掃射並向下齊射)
         FORTRESS, // 堡壘型 (節奏推進 + 雙模式輪替攻擊)
         DASH,     // 衝刺型 (瞄準後高速直線突進)
-        BOSS2     // 第二關 Boss (散射彈幕 / 召喚 DashEnemy)
+        BOSS2,     // 第二關 Boss (散射彈幕 / 召喚 DashEnemy)
+        BTURRET
     };
 
     struct EnemySpawnData {

@@ -18,6 +18,7 @@
 #include "FortressEnemy.hpp"
 #include "DashEnemy.hpp"
 #include "Boss2Enemy.hpp"
+#include "BTurretEnemy.hpp"
 
 namespace {
 std::optional<Item::Type> RollEnemyDropType() {
@@ -391,6 +392,8 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<DashEnemy>(spawnPos));
         }else if (type == EnemyType::BOSS2) {
             m_Enemies.push_back(std::make_shared<Boss2Enemy>(spawnPos));
+        }else if (type == EnemyType::BTURRET) {
+            m_Enemies.push_back(std::make_shared<BTurretEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
@@ -820,70 +823,70 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-
+            { 60.0f,  {0.0f, 500.0f}, EnemyType::BTURRET, false },
 
 
             //開場：3隻突襲機
-            { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-
-            // 散彈型來襲
-            { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-
-            // 坦克型登場
-            { 480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 540.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 600.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-
-            // 中場：突襲機混戰
-            { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-
-            // 幽靈型
-            { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-            { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
-
-            // 坦克混戰
-            { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-
-            // 後期：突襲機返場
-            { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-
-            // 混合波次
-            { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-            { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-
-            // 砲台型
-            { 1440.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
-            { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET, false },
-            { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
-
-            // 最後衝刺
-            { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
-            { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
-
-            // 最後的坦克
-            { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-            { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
-
-            // 第一關BOSS
-            { 2100.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
+            // { 60.0f,  {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 120.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 180.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            //
+            // // 散彈型來襲
+            // { 300.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            // { 420.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            //
+            // // 坦克型登場
+            // { 480.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            // { 540.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            // { 600.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            //
+            // // 中場：突襲機混戰
+            // { 660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 690.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 720.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 780.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 810.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 840.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            //
+            // // 幽靈型
+            // { 900.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            // { 1140.0f, {0.0f, 500.0f}, EnemyType::PHANTOM, true },
+            //
+            // // 坦克混戰
+            // { 1140.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            // { 1170.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            //
+            // // 後期：突襲機返場
+            // { 1200.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1230.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1260.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            //
+            // // 混合波次
+            // { 1320.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            // { 1350.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1380.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1410.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            //
+            // // 砲台型
+            // { 1440.0f, {150.0f, 500.0f}, EnemyType::TURRET, false },
+            // { 1470.0f, {75.0f, 500.0f}, EnemyType::TURRET, false },
+            // { 1500.0f, {0.0f, 500.0f}, EnemyType::TURRET, false },
+            //
+            // // 最後衝刺
+            // { 1560.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1580.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1600.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1620.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1640.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1660.0f, {0.0f, 500.0f}, EnemyType::ASSAULT, true },
+            // { 1690.0f, {0.0f, 500.0f}, EnemyType::SPREAD, true },
+            //
+            // // 最後的坦克
+            // { 1720.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            // { 1750.0f, {0.0f, 500.0f}, EnemyType::TANK, true },
+            //
+            // // 第一關BOSS
+            // { 2100.0f, {0.0f, 500.0f}, EnemyType::BOSS, false }
         };
     }
     else if (levelNum == 2) {
