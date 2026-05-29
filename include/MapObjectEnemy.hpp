@@ -8,7 +8,7 @@ public:
     // 💡 這裡的圖片路徑請換成你準備好的地圖物件 (例如石頭、雲朵或建築物)
     // HP 隨便設，因為子彈根本不會碰到它
     MapObjectEnemy(const glm::vec2& startPosition)
-        : Enemy(startPosition, RESOURCE_DIR "/Image/Background/rock.png", 9999) {
+        : Enemy(startPosition, RESOURCE_DIR "/Image/Background/TurretFortress.png", 9999) {
         
         m_CanShoot = false; // 關閉射擊能力
         
@@ -20,7 +20,7 @@ public:
 
     void Update(const glm::vec2& playerPos) override {
         // 隨地圖往下移動
-        m_Transform.translation.y -= 0.5f;
+        m_Transform.translation.y -= 1.0f;
 
         // 不需要旋轉，也不需要發射子彈
         Enemy::Update(playerPos);

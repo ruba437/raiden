@@ -460,6 +460,11 @@ void App::Update() {
         bool bulletHit = false;
 
         for (auto enemyIt = m_Enemies.begin(); enemyIt != m_Enemies.end(); ) {
+            if (std::dynamic_pointer_cast<MapObjectEnemy>(*enemyIt)) {
+                ++enemyIt; // ⚠️ 極度重要：跳過前一定要讓指標往前走，否則會陷入無窮迴圈！
+                continue;  // 直接跳過，不計算距離、也不會扣血
+            }
+
             // 計算子彈與敵機的距離
             float distToEnemy = glm::distance((*bulletIt)->GetPosition(), (*enemyIt)->GetPosition());
 
@@ -835,8 +840,18 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-            { 10.0f,  {0.0f, 500.0f}, EnemyType::MOUNTEDTANK, false },
-            { 85.0f,  {0.0f, 500.0f}, EnemyType::CARRIER, false },
+
+
+            // TurretFortress
+            { 240.0f, {-65.0f, 500.0f}, EnemyType::TURRET, false },
+            { 300.0f, {65.0f, 500.0f}, EnemyType::TURRET, false },
+            { 300.0f,  {0.0f, 500.0f}, EnemyType::MAPOBJECT, false },
+            { 360.0f, {-65.0f, 500.0f}, EnemyType::TURRET, false },
+
+
+            // Carrier
+            // { 10.0f,  {0.0f, 500.0f}, EnemyType::MOUNTEDTANK, false },
+            // { 85.0f,  {0.0f, 500.0f}, EnemyType::CARRIER, false },
 
 
 
