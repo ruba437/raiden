@@ -56,6 +56,10 @@ add_executable(${PROJECT_NAME}
         include/MenuBackground.hpp
         include/EndFrame.hpp
         include/BTurretEnemy.hpp
+        include/FanEnemy.hpp
+        include/CarrierEnemy.hpp
+        include/MountedTankEnemy.hpp
+        include/MapObjectEnemy.hpp
 )
 
 if(MSVC)

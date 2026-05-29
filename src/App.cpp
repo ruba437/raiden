@@ -19,6 +19,10 @@
 #include "DashEnemy.hpp"
 #include "Boss2Enemy.hpp"
 #include "BTurretEnemy.hpp"
+#include "FanEnemy.hpp"
+#include "CarrierEnemy.hpp"
+#include "MountedTankEnemy.hpp"
+#include "MapObjectEnemy.hpp"
 
 namespace {
 std::optional<Item::Type> RollEnemyDropType() {
@@ -394,6 +398,14 @@ void App::Update() {
             m_Enemies.push_back(std::make_shared<Boss2Enemy>(spawnPos));
         }else if (type == EnemyType::BTURRET) {
             m_Enemies.push_back(std::make_shared<BTurretEnemy>(spawnPos));
+        }else if (type == EnemyType::FAN) {
+            m_Enemies.push_back(std::make_shared<FanEnemy>(spawnPos));
+        }else if (type == EnemyType::CARRIER) {
+            m_Enemies.push_back(std::make_shared<CarrierEnemy>(spawnPos));
+        }else if (type == EnemyType::MOUNTEDTANK) {
+            m_Enemies.push_back(std::make_shared<MountedTankEnemy>(spawnPos));
+        }else if (type == EnemyType::MAPOBJECT) {
+            m_Enemies.push_back(std::make_shared<MapObjectEnemy>(spawnPos));
         }
 
         m_CurrentEventIndex++;
@@ -823,7 +835,9 @@ void App::LoadLevel(int levelNum) {
         // 難度：簡單，主要是突襲型和散彈型
         m_LevelEvents = {
             //test
-            { 60.0f,  {0.0f, 500.0f}, EnemyType::BTURRET, false },
+            { 10.0f,  {0.0f, 500.0f}, EnemyType::MOUNTEDTANK, false },
+            { 85.0f,  {0.0f, 500.0f}, EnemyType::CARRIER, false },
+
 
 
             //開場：3隻突襲機

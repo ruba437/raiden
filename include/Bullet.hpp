@@ -21,7 +21,7 @@ public:
 
         m_Drawable = std::make_shared<Util::Image>(imagePath);
         m_Transform.translation = position;
-        m_ZIndex = 5;
+        m_ZIndex = 10;
         m_Transform.scale = {0.5f, 0.5f};
 
         // (進階選用) 如果你之前有加上根據速度旋轉圖片的邏輯，請保留在這裡：
