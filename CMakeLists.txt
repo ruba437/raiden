@@ -60,6 +60,7 @@ add_executable(${PROJECT_NAME}
         include/CarrierEnemy.hpp
         include/MountedTankEnemy.hpp
         include/MapObjectEnemy.hpp
+        include/Boss3Enemy.hpp
 )
 
 if(MSVC)

@@ -67,7 +67,8 @@ private:
         FAN,
         CARRIER,
         MOUNTEDTANK,
-        MAPOBJECT
+        MAPOBJECT,
+        BOSS3,     // 第三關 Boss (多重砲口組合彈幕)
     };
 
     struct EnemySpawnData {
