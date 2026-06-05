@@ -522,10 +522,12 @@ void App::Update() {
         float distToPlayer = glm::distance(m_Player->GetPosition(), (*enemyIt)->GetPosition());
 
         if (distToPlayer < 35.0f) { // 玩家撞到敵機
-            m_Player->TakeDamage(1);
-            if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
+            if (!m_IsInvincible) {
+                m_Player->TakeDamage(1);
+                if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
+            }
 
-            //(*enemyIt)->TakeDamage(1);
+
 
             // 檢查玩家是否死亡
             if (m_Player->IsDead()) {
@@ -598,8 +600,10 @@ void App::Update() {
 
         // 子彈的判定半徑通常比較小 (例如 20.0f)，這樣玩家比較好閃躲
         if (distToPlayer < 20.0f) {
-            m_Player->TakeDamage(1);
-            if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
+            if (!m_IsInvincible) {
+                m_Player->TakeDamage(1);
+                if (m_HpUI) m_HpUI->UpdateHP(m_Player->GetHP());
+            }
 
             bulletIt = m_EnemyBullets.erase(bulletIt);
 
@@ -685,10 +689,21 @@ void App::UpdateMenu() {
         m_MenuBg->Draw();
     }
 
-    // 2. 偵測 Enter 鍵 (在 SDL/PTSD 引擎中通常叫 RETURN)
+    if (Util::Input::IsKeyPressed(Util::Keycode::I)) {
+        m_IsInvincible = !m_IsInvincible;
+        if (m_IsInvincible) {
+            LOG_INFO("Invincible Mode: ON ");
+        } else {
+            LOG_INFO("Invincible Mode: OFF ");
+        }
+    }
+
+    // 2. 偵測 Enter 鍵
     if (Util::Input::IsKeyPressed(Util::Keycode::RETURN)) {
         // 進入遊戲後，這張主畫面背景就不需要了，釋放它的記憶體
         m_MenuBg = nullptr;
+
+        LOG_INFO("Game Start! Invincible Mode is {}", m_IsInvincible ? "ON" : "OFF");
 
         // 切換到進場狀態
         m_CurrentState = State::INTRO;
@@ -844,7 +859,7 @@ void App::LoadLevel(int levelNum) {
         m_LevelEvents = {
             //test
 
-            // TurretFortress
+            //TurretFortress
             // { 240.0f, {-65.0f, 500.0f}, EnemyType::TURRET, false },
             // { 300.0f, {65.0f, 500.0f}, EnemyType::TURRET, false },
             // { 300.0f,  {0.0f, 500.0f}, EnemyType::MAPOBJECT, false },

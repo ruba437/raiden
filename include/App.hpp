@@ -41,6 +41,7 @@ private:
 
 private:
     State m_CurrentState = State::START;
+    bool m_IsInvincible = false;
     std::shared_ptr<Player> m_Player;
     std::vector<std::shared_ptr<Bullet>> m_Bullets;
     std::shared_ptr<Background> m_Bg1;
