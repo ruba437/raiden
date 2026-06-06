@@ -104,4 +104,38 @@ public:
     }
 };
 
+// 簡單的無敵狀態顯示 UI，放在畫面右下角
+class InvincibleUI : public Util::GameObject {
+private:
+    bool m_Visible = false;
+public:
+    InvincibleUI() {
+        m_ZIndex = 100;
+        // 放在畫面右下角（相對座標系）
+        m_Transform.translation = {200.0f, -300.0f};
+    }
+
+    // 若 active=true 且 text 非空則顯示該文字；若 active=false 則隱藏
+    void UpdateStatus(bool active, const std::string& text) {
+        m_Visible = active;
+        if (!m_Visible) {
+            m_Drawable.reset();
+            return;
+        }
+
+        std::string content = text.empty() ? "INVINCIBLE" : text;
+        // 使用小一點的字體以免遮擋畫面
+        m_Drawable = std::make_shared<Util::Text>(
+            RESOURCE_DIR "/Font/arial.ttf",
+            26,
+            content,
+            Util::Color{255, 215, 0, 255} // 金黃色
+        );
+    }
+
+    void DrawUI() {
+        if (m_Visible && m_Drawable) this->Draw();
+    }
+};
+
 #endif

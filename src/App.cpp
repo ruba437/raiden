@@ -85,6 +85,13 @@ void App::Start() {
 
     m_BombUI = std::make_shared<BombUI>();
     m_BombUI->UpdateBomb(m_Player->GetBombCount());
+    // 無敵狀態提示 UI
+    m_InvincibleUI = std::make_shared<InvincibleUI>();
+    if (m_IsInvincible) {
+        m_InvincibleUI->UpdateStatus(true, "INVINCIBLE");
+    } else {
+        m_InvincibleUI->UpdateStatus(false, "");
+    }
 
     // ==========================================
     // 初始化第一關
@@ -166,6 +173,16 @@ void App::Update() {
         }
     }
 
+    // 切換無敵模式（使用 IsKeyUp 以避免連續切換）
+    if (Util::Input::IsKeyUp(Util::Keycode::I)) {
+        m_IsInvincible = !m_IsInvincible;
+        m_InvincibilityFeedbackTimer = m_InvincibilityFeedbackDuration;
+        if (m_InvincibleUI) {
+            m_InvincibleUI->UpdateStatus(true, m_IsInvincible ? "INVINCIBLE: ON" : "INVINCIBLE: OFF");
+        }
+        LOG_INFO("Invincible Mode: {}", m_IsInvincible ? "ON" : "OFF");
+    }
+
     // 1. 更新動畫狀態 (傳入 dx)
     m_Player->SetDirection(dx);
 
@@ -184,6 +201,21 @@ void App::Update() {
 
     if (m_BombCooldownTimer > 0.0f) {
         m_BombCooldownTimer -= 1.0f;
+    }
+
+    // 無敵切換反饋計時器更新
+    if (m_InvincibilityFeedbackTimer > 0.0f) {
+        m_InvincibilityFeedbackTimer -= 1.0f;
+        if (m_InvincibilityFeedbackTimer <= 0.0f) {
+            // 計時結束後，若處於無敵就顯示常駐小提示，否則隱藏
+            if (m_InvincibleUI) {
+                if (m_IsInvincible) {
+                    m_InvincibleUI->UpdateStatus(true, ""); // 顯示簡短 INVINCIBLE 標記
+                } else {
+                    m_InvincibleUI->UpdateStatus(false, "");
+                }
+            }
+        }
     }
 
     // --- 2. 偵測攻擊輸入 ---
@@ -672,6 +704,7 @@ void App::Update() {
     if (m_ScoreUI) m_ScoreUI->Draw();
     if (m_HpUI) m_HpUI->DrawUI();
     if (m_BombUI) m_BombUI->DrawUI();
+    if (m_InvincibleUI) m_InvincibleUI->DrawUI();
 
     /* 原有的退出邏輯 */
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {

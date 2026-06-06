@@ -91,6 +91,10 @@ private:
     std::shared_ptr<ScoreUI> m_ScoreUI;
     std::shared_ptr<HpUI> m_HpUI;
     std::shared_ptr<BombUI> m_BombUI;
+    // 無敵模式 UI 與反饋計時器
+    float m_InvincibilityFeedbackTimer = 0.0f; // 切換時短暫顯示 ON/OFF 訊息
+    const float m_InvincibilityFeedbackDuration = 60.0f; // 以幀為單位 (約 1 秒 @60FPS)
+    std::shared_ptr<class InvincibleUI> m_InvincibleUI;
     float m_PlayerShootTimer = 0.0f;
     float m_MissileShootTimer = 0.0f;
     float m_BombCooldownTimer = 0.0f;
